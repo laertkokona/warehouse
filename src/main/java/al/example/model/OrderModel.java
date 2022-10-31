@@ -35,7 +35,7 @@ public class OrderModel {
 	private Date deadlineDate;
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "order_id")
-	private List<OrderItemModel> items;
+	private List<ItemModel> items;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "delivery_id")
 	private DeliveryModel delivery;
