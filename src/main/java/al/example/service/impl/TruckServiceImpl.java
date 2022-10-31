@@ -25,8 +25,9 @@ public class TruckServiceImpl implements TruckService {
 	@Override
 	public TruckDTO getTruckById(Long id) {
 		log.info("Fetching Truck with id {} from database", id);
-		return convertToDTO(truckRepo.findById(id)
-				.orElseThrow(() -> new GeneralException("Truck with id " + id + " not found in database", null)));
+		Optional<TruckModel> truckOpt = truckRepo.findById(id);
+		checkIfExists(truckOpt);
+		return convertToDTO(truckOpt.get());
 	}
 
 	@Override
@@ -48,12 +49,22 @@ public class TruckServiceImpl implements TruckService {
 
 	@Override
 	public void deleteTruckById(Long id) {
+		log.info("Fetching Truck with id {} from database", id);
+		Optional<TruckModel> truckOpt = truckRepo.findById(id);
+		checkIfExists(truckOpt);
 		log.info("Deleting Truck with id {} from database", id);
 		truckRepo.deleteById(id);
 	}
 	
 	private TruckDTO convertToDTO(TruckModel truck) {
 		return modelMapper.map(truck, TruckDTO.class);
+	}
+	
+	private void checkIfExists(Optional<TruckModel> truckOpt) {
+		if(truckOpt.isEmpty()) {
+			log.error("Truck not found");
+			throw new GeneralException("Truck not found", null);
+		}
 	}
 
 }

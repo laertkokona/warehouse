@@ -13,5 +13,6 @@ public interface UserService extends UserDetailsService {
 	UserDTO getUserById(Long id);
 	UserDTO saveUser(UserModel user);
 	List<UserDTO> getAllUsers();
+	void passiveDeleteUser(Long id);
 
 }

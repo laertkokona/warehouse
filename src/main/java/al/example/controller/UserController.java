@@ -1,6 +1,7 @@
 package al.example.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +39,12 @@ public class UserController {
 	@PostMapping("/save")
 	public ResponseEntity<UserDTO> saveUser(@RequestBody UserModel user){
 		return ResponseEntity.ok(userService.saveUser(user));
+	}
+	
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<UserDTO> deleteUser(@PathVariable("id") Long id){
+		userService.passiveDeleteUser(id);
+		return ResponseEntity.ok(null);
 	}
 
 }
