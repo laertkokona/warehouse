@@ -32,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and().authorizeRequests().antMatchers("/v3/api-docs", "/swagger-ui/**", "/swagger-ui*/**", "/warehouse-api/**").permitAll()
-			.and().authorizeRequests().anyRequest().authenticated()
+			.and().authorizeRequests().anyRequest().permitAll()
 			.and().addFilter(new CustomAuthenticationFilter(authenticationManagerBean()))
 				.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 	}

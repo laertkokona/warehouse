@@ -33,7 +33,7 @@ public class OrderModel {
 	@JoinColumn(name = "order_status_id")
 	private OrderStatusModel orderStatus;
 	private Date deadlineDate;
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true)
 	@JoinColumn(name = "order_id")
 	private List<ItemModel> items;
 	@ManyToOne(fetch = FetchType.LAZY)

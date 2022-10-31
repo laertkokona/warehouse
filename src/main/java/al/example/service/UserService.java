@@ -9,9 +9,9 @@ import al.example.model.dto.UserDTO;
 
 public interface UserService extends UserDetailsService {
 	
-	UserModel getUserByUsername(String username);
+	UserDTO getUserByUsername(String username);
 	UserDTO getUserById(Long id);
-	UserModel saveUser(UserModel user);
-	List<UserModel> getAllUsers();
+	UserDTO saveUser(UserModel user);
+	List<UserDTO> getAllUsers();
 
 }

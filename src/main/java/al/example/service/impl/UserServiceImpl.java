@@ -3,6 +3,7 @@ package al.example.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import al.example.exception.GeneralException;
 import al.example.model.UserModel;
 import al.example.model.dto.UserDTO;
 import al.example.repo.UserRepo;
@@ -22,6 +24,7 @@ public class UserServiceImpl implements UserService {
 	
 	private final UserRepo userRepo;
 	private final BCryptPasswordEncoder encoder;
+	private final ModelMapper modelMapper;
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -36,28 +39,37 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserModel saveUser(UserModel user) {
+	public UserDTO saveUser(UserModel user) {
 		log.info("Saving new user {} to database", user.getUsername());
 		user.setPassword(encoder.encode(user.getPassword()));
-		return userRepo.save(user);
+		user = userRepo.save(user);
+//		return userRepo.save(user);
+		return convertToDTO(user);
 	}
 
 	@Override
-	public UserModel getUserByUsername(String username) {
-		// TODO Auto-generated method stub
-		return userRepo.findByUsername(username).isPresent() ? userRepo.findByUsername(username).get() : null;
+	public UserDTO getUserByUsername(String username) {
+		log.info("Fetching User {} from database", username);
+		UserModel user = userRepo.findByUsername(username).orElseThrow(() -> new GeneralException()) ;
+		return convertToDTO(user);
 	}
 	
 	@Override
 	public UserDTO getUserById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		log.info("Fetching User with id: {} from database", id);
+		UserModel user = userRepo.findById(id).orElseThrow(() -> new IllegalStateException());
+		return modelMapper.map(user, UserDTO.class);
 	}
 
 	@Override
-	public List<UserModel> getAllUsers() {
+	public List<UserDTO> getAllUsers() {
 		log.info("Fetching all users");
-		return userRepo.findAll();
+//		return userRepo.findAll();
+		return null;
+	}
+	
+	private UserDTO convertToDTO(UserModel user) {
+		return modelMapper.map(user, UserDTO.class);
 	}
 
 }
