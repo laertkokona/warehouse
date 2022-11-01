@@ -27,12 +27,13 @@ public class OrderModel {
 	@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq")
     @SequenceGenerator(name = "order_seq", sequenceName = "order_id_seq", allocationSize = 1, initialValue = 1)
-	private Long id;	
+	private Long id;
 	private Date submittedDate;
+	private Date deadlineDate;
+	private String code;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_status_id")
 	private OrderStatusModel orderStatus;
-	private Date deadlineDate;
 	@OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true)
 	@JoinColumn(name = "order_id")
 	private List<ItemModel> items;

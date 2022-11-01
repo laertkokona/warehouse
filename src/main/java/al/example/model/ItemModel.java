@@ -2,6 +2,7 @@ package al.example.model;
 
 import java.math.BigDecimal;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,6 +24,8 @@ public class ItemModel {
     @SequenceGenerator(name = "item_seq", sequenceName = "item_id_seq", allocationSize = 1, initialValue = 1)
 	private Long id;
 	private String name;
+	@Column(unique = true, nullable = false)
+	private String code;
 	private Integer quantity;
 	private BigDecimal unitPrice;
 

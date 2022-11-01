@@ -20,7 +20,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "devlivery")
+@Table(name = "delivery")
 @Data @NoArgsConstructor @AllArgsConstructor
 public class DeliveryModel {
 	

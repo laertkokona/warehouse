@@ -23,5 +23,6 @@ public class OrderStatusModel {
 	private Long id;
 	@Column(unique = true)
 	private String name;
+	private Boolean initialStatus;
 
 }

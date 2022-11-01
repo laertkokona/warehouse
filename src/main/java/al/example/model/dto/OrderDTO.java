@@ -12,8 +12,9 @@ public class OrderDTO {
 	
 	private Long id;	
 	private Date submittedDate;
-	private OrderStatusDTO orderStatus;
 	private Date deadlineDate;
+	private String code;
+	private OrderStatusDTO orderStatus;
 	private List<ItemDTO> items;
 	private DeliveryDTO delivery;
 

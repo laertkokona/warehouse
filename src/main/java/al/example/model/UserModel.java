@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,9 +28,15 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "user")
+@DynamicUpdate
 @Data @NoArgsConstructor @AllArgsConstructor
 public class UserModel implements UserDetails {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7819270333494061422L;
+	
 	@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
     @SequenceGenerator(name = "user_seq", sequenceName = "user_id_seq", allocationSize = 1, initialValue = 1)

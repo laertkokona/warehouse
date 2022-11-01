@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import al.example.model.ResponseWrapper;
+import al.example.model.pojo.ResponseWrapper;
 
 @ControllerAdvice
-public class CustomExceptionHandler {
+public class GeneralExceptionHandler {
 
 	@ExceptionHandler(value = { GeneralException.class })
 	public void commence(HttpServletRequest request, HttpServletResponse response, GeneralException exception)

@@ -1,4 +1,4 @@
-package al.example.model;
+package al.example.model.pojo;
 
 import java.util.List;
 
