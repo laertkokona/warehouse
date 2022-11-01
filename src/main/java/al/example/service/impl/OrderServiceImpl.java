@@ -15,6 +15,7 @@ import al.example.enums.OrderStatusesEnum;
 import al.example.exception.GeneralException;
 import al.example.model.OrderModel;
 import al.example.model.OrderStatusModel;
+import al.example.model.dto.BasicOrderDTO;
 import al.example.model.dto.IOrderStatusActionDTO;
 import al.example.model.dto.OrderDTO;
 import al.example.model.pojo.Pagination;
@@ -32,6 +33,7 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderRepo orderRepo;
 	private final OrderStatusRepo orderStatusRepo;
 	private final OrderStatusActionRepo orderStatusActionRepo;
+//	private final BasicOrderRepo basicOrderRepo;
 	private final ModelMapper modelMapper;
 	
 	private OrderDTO convertToDTO(OrderModel order) {
@@ -67,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public ResponseWrapper<OrderDTO> saveOrder(OrderModel order) {
+	public ResponseWrapper<OrderDTO> createOrder(OrderModel order) {
 		log.info("Generating Code for new Order");
 		order.setCode("ORD_" + orderRepo.getCodeSequence().toString());
 		order.setOrderStatus(orderStatusRepo.findByInitialStatus(true).get());
@@ -167,6 +169,12 @@ public class OrderServiceImpl implements OrderService {
 			e.printStackTrace();
 			return new ResponseWrapper<OrderDTO>(false, null, e.getMessage());
 		}
+	}
+
+	@Override
+	public ResponseWrapper<BasicOrderDTO> getOrdersByStatusFilter(String statusName, Pagination pagination) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

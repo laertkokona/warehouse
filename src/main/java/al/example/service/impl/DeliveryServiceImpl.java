@@ -36,4 +36,10 @@ public class DeliveryServiceImpl implements DeliveryService {
 				: new ResponseWrapper<DeliveryDTO>(false, null, "Delivery with id " + id + " not found");
 	}
 
+	@Override
+	public ResponseWrapper<DeliveryDTO> createDelivery(DeliveryModel delivery) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

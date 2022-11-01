@@ -35,9 +35,9 @@ public class OrderController {
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
 	}
 	
-	@PostMapping("/save")
-	public ResponseEntity<ResponseWrapper<OrderDTO>> save(@RequestBody OrderModel order){
-		ResponseWrapper<OrderDTO> res = orderService.saveOrder(order);
+	@PostMapping("create")
+	public ResponseEntity<ResponseWrapper<OrderDTO>> create(@RequestBody OrderModel order){
+		ResponseWrapper<OrderDTO> res = orderService.createOrder(order);
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
 	}
 	
