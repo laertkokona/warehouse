@@ -1,6 +1,6 @@
 package al.example.enums;
 
-public enum RoleEnum {
+public enum RolesEnum {
 	
 	SYSTEM_ADMIN(1L, "SYSTEM_ADMIN"),
 	WAREHOUSE_MANAGER(2L, "WAREHOUSE_MANAGER"),
@@ -9,7 +9,7 @@ public enum RoleEnum {
 	private Long id;
 	private String name;
 	
-	RoleEnum(Long id, String name){
+	RolesEnum(Long id, String name){
 		this.id = id;
 		this.name = name;
 	}

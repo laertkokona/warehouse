@@ -11,5 +11,8 @@ public interface OrderService {
 	ResponseWrapper<OrderDTO> getAllOrders(Pagination pagination);
 	ResponseWrapper<OrderDTO> saveOrder(OrderModel order);
 	ResponseWrapper<OrderDTO> deleteOrder(Long id);
-
+	ResponseWrapper<OrderDTO> editOrder(Long id, OrderModel order);
+	ResponseWrapper<OrderDTO> cancelOrder(Long id);
+	ResponseWrapper<OrderDTO> submitOrder(Long id);
+	
 }

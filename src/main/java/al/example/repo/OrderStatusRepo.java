@@ -11,5 +11,6 @@ import al.example.model.OrderStatusModel;
 public interface OrderStatusRepo extends JpaRepository<OrderStatusModel, Long> {
 	
 	Optional<OrderStatusModel> findByInitialStatus(Boolean initialStatus);
+	Optional<OrderStatusModel> findByName(String name);
 
 }

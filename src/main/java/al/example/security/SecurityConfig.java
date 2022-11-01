@@ -12,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import al.example.enums.RoleEnum;
+import al.example.enums.RolesEnum;
 import al.example.exception.CustomAccessDeniedHandler;
 import al.example.filter.CustomAuthenticationFilter;
 import al.example.filter.CustomAuthorizationFilter;
@@ -60,7 +60,7 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and().authorizeRequests().antMatchers("/v3/api-docs", "/swagger-ui/**", "/swagger-ui*/**", "/warehouse-api/**", "/login").permitAll()
-		.antMatchers("/users/**").hasAuthority(RoleEnum.SYSTEM_ADMIN.name())
+		.antMatchers("/users/**").hasAuthority(RolesEnum.SYSTEM_ADMIN.name())
 		.and().authorizeRequests().anyRequest().authenticated()
 		.and().addFilter(new CustomAuthenticationFilter(authManager(http.getSharedObject(AuthenticationConfiguration.class))))
 			.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)

@@ -1,6 +1,10 @@
 package al.example.enums;
 
-public enum OrderStatusEnum {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter @AllArgsConstructor
+public enum OrderStatusesEnum {
 	
 	CREATED(1L, "CREATED"),
 	AWAITING_APPROVAL(2L, "AWAITING_APPROVAL"),
@@ -12,18 +16,5 @@ public enum OrderStatusEnum {
 	
 	private Long id;
 	private String name;
-	
-	OrderStatusEnum(Long id, String name){
-		this.id = id;
-		this.name = name;
-	}
-	
-	public Long getId() {
-		return id;
-	}
-	
-	public String getName() {
-		return name;
-	}
 
 }

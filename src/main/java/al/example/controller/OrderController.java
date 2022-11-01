@@ -46,5 +46,23 @@ public class OrderController {
 		ResponseWrapper<OrderDTO> res = orderService.deleteOrder(id);
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
 	}
+	
+	@PostMapping("/update/{id}")
+	public ResponseEntity<ResponseWrapper<OrderDTO>> edit(@PathVariable("id") Long id, @RequestBody OrderModel order){
+		ResponseWrapper<OrderDTO> res = orderService.editOrder(id, order);
+		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
+	}
+	
+	@PostMapping("/cancel/{id}")
+	public ResponseEntity<ResponseWrapper<OrderDTO>> cancel(@PathVariable("id") Long id){
+		ResponseWrapper<OrderDTO> res = orderService.cancelOrder(id);
+		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
+	}
+
+	@PostMapping("/submit/{id}")
+	public ResponseEntity<ResponseWrapper<OrderDTO>> submit(@PathVariable("id") Long id){
+		ResponseWrapper<OrderDTO> res = orderService.submitOrder(id);
+		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
+	}
 
 }

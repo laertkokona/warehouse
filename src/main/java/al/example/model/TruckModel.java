@@ -21,9 +21,9 @@ public class TruckModel {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "truck_seq")
     @SequenceGenerator(name = "truck_seq", sequenceName = "truck_id_seq", allocationSize = 1, initialValue = 1)
 	private Long id;
-	@Column(unique = true)
+	@Column(unique = true, nullable = false)
 	private String chassisNumber;
-	@Column(unique = true)
+	@Column(unique = true, nullable = false)
 	private String licensePlate;
 
 }

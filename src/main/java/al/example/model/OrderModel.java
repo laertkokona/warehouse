@@ -36,7 +36,7 @@ public class OrderModel {
 	private OrderStatusModel orderStatus;
 	@OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true)
 	@JoinColumn(name = "order_id")
-	private List<ItemModel> items;
+	private List<OrderItemModel> items;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "delivery_id")
 	private DeliveryModel delivery;

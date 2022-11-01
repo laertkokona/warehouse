@@ -41,7 +41,7 @@ public class UserModel implements UserDetails {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
     @SequenceGenerator(name = "user_seq", sequenceName = "user_id_seq", allocationSize = 1, initialValue = 1)
     private Long id;
-	@Column(unique = true)
+	@Column(unique = true, nullable = false)
 	private String username;
 	private String password;
 	private String firstName;

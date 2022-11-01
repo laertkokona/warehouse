@@ -11,12 +11,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import al.example.enums.OrderStatusesEnum;
 import al.example.exception.GeneralException;
 import al.example.model.OrderModel;
+import al.example.model.OrderStatusModel;
+import al.example.model.dto.IOrderStatusActionDTO;
 import al.example.model.dto.OrderDTO;
 import al.example.model.pojo.Pagination;
 import al.example.model.pojo.ResponseWrapper;
 import al.example.repo.OrderRepo;
+import al.example.repo.OrderStatusActionRepo;
 import al.example.repo.OrderStatusRepo;
 import al.example.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +31,7 @@ public class OrderServiceImpl implements OrderService {
 	
 	private final OrderRepo orderRepo;
 	private final OrderStatusRepo orderStatusRepo;
+	private final OrderStatusActionRepo orderStatusActionRepo;
 	private final ModelMapper modelMapper;
 	
 	private OrderDTO convertToDTO(OrderModel order) {
@@ -35,6 +40,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 	
 	private void checkIfExists(Optional<OrderModel> truckOpt) {
+		log.info("Checking if Order exists");
 		if(truckOpt.isEmpty()) {
 			log.error("Order not found");
 			throw new GeneralException("Order not found", null);
@@ -79,6 +85,83 @@ public class OrderServiceImpl implements OrderService {
 			log.info("Deleting Order with id {} from database", id);
 			orderRepo.deleteById(id);
 			return new ResponseWrapper<OrderDTO>(true, null, "Success");
+		} catch (Exception e) {
+			log.error("{}", e.getMessage());
+			e.printStackTrace();
+			return new ResponseWrapper<OrderDTO>(false, null, e.getMessage());
+		}
+	}
+
+	@Override
+	public ResponseWrapper<OrderDTO> editOrder(Long id, OrderModel order) {
+		try {
+			log.info("Fetching Order with id {} from database", id);
+			OrderModel orderDb = orderRepo.findById(id).orElseThrow(()-> new GeneralException("Order not found", null));
+			Optional<IOrderStatusActionDTO> osaDTO = orderStatusActionRepo.findOrderStatusActionByOrderStatusName(orderDb.getOrderStatus().getName());
+			if(osaDTO.isEmpty()) {
+				log.error("Order does not have a Status");
+				throw new GeneralException("Order does not have a Status", Arrays.asList(convertToDTO(orderDb)));
+			}
+			if(!osaDTO.get().getAllowEdit()) {
+				log.error("Order cannot be Edited");
+				throw new GeneralException("Order cannot be Edited", Arrays.asList(convertToDTO(orderDb)));
+			}
+			log.info("Replacing old Order Items with new Order Items", id);
+			orderDb.setItems(order.getItems());
+			orderDb = orderRepo.save(orderDb);
+			return new ResponseWrapper<OrderDTO>(true, Arrays.asList(convertToDTO(orderDb)), "Success");
+		} catch (Exception e) {
+			log.error("{}", e.getMessage());
+			e.printStackTrace();
+			return new ResponseWrapper<OrderDTO>(false, null, e.getMessage());
+		}
+	}
+
+	@Override
+	public ResponseWrapper<OrderDTO> cancelOrder(Long id) {
+		try {
+			log.info("Fetching Order with id {} from database", id);
+			OrderModel orderDb = orderRepo.findById(id).orElseThrow(()-> new GeneralException("Order not found", null));
+			Optional<IOrderStatusActionDTO> osaDTO = orderStatusActionRepo.findOrderStatusActionByOrderStatusName(orderDb.getOrderStatus().getName());
+			if(osaDTO.isEmpty()) {
+				log.error("Order does not have a Status");
+				throw new GeneralException("Order does not have a Status", Arrays.asList(orderDb));
+			}
+			if(!osaDTO.get().getAllowCancel()) {
+				log.error("Order cannot be Cancelled");
+				throw new GeneralException("Order cannot be Cancelled", Arrays.asList(orderDb));
+			}
+			Optional<OrderStatusModel> osDTO = orderStatusRepo.findByName(OrderStatusesEnum.CANCELED.getName());
+			log.info("Setting {} status to Order", osDTO.get().getName());
+			orderDb.setOrderStatus(osDTO.get());
+			orderDb = orderRepo.save(orderDb);
+			return new ResponseWrapper<OrderDTO>(true, Arrays.asList(convertToDTO(orderDb)), "Success");
+		} catch (Exception e) {
+			log.error("{}", e.getMessage());
+			e.printStackTrace();
+			return new ResponseWrapper<OrderDTO>(false, null, e.getMessage());
+		}
+	}
+
+	@Override
+	public ResponseWrapper<OrderDTO> submitOrder(Long id) {
+		try {
+			log.info("Fetching Order with id {} from database", id);
+			OrderModel orderDb = orderRepo.findById(id).orElseThrow(()-> new GeneralException("Order not found", null));
+			Optional<IOrderStatusActionDTO> osaDTO = orderStatusActionRepo.findOrderStatusActionByOrderStatusName(orderDb.getOrderStatus().getName());
+			if(osaDTO.isEmpty()) {
+				log.error("Order does not have a Status");
+				throw new GeneralException("Order does not have a Status", Arrays.asList(orderDb));
+			}
+			if(!osaDTO.get().getAllowSubmit()) {
+				log.error("Order cannot be Submitted");
+				throw new GeneralException("Order cannot be Submitted", Arrays.asList(orderDb));
+			}
+			Optional<OrderStatusModel> osDTO = orderStatusRepo.findByName(OrderStatusesEnum.AWAITING_APPROVAL.getName());
+			log.info("Setting {} status to Order", osDTO.get().getName());
+			orderDb.setOrderStatus(osDTO.get());
+			orderDb = orderRepo.save(orderDb);
+			return new ResponseWrapper<OrderDTO>(true, Arrays.asList(convertToDTO(orderDb)), "Success");
 		} catch (Exception e) {
 			log.error("{}", e.getMessage());
 			e.printStackTrace();
