@@ -15,6 +15,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,7 +38,8 @@ public class DeliveryModel {
             inverseJoinColumns = @JoinColumn(name = "truck_id")
     )
     private List<TruckModel> trucks;
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<OrderModel> orders;
     private Boolean delivered;
 
