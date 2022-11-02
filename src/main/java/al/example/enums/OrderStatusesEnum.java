@@ -16,5 +16,12 @@ public enum OrderStatusesEnum {
 	
 	private Long id;
 	private String name;
+	
+	public static OrderStatusesEnum getByName(String name) {
+		for (OrderStatusesEnum os : values()) {
+			if(os.getName().equalsIgnoreCase(name)) return os;
+		}
+		return null;
+	}
 
 }

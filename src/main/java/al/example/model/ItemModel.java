@@ -26,7 +26,8 @@ public class ItemModel {
 	private String name;
 	@Column(unique = true, nullable = false)
 	private String code;
-	private Integer quantity;
+	private Integer totalQuantity;
+	private Integer availableQuantity;
 	private BigDecimal unitPrice;
 
 }

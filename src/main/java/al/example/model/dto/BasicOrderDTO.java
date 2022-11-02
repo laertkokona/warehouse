@@ -14,5 +14,6 @@ public class BasicOrderDTO {
 	private Date deadlineDate;
 	private String code;
 	private String statusName;
+	private String username;
 
 }

@@ -8,13 +8,15 @@ import al.example.model.pojo.ResponseWrapper;
 
 public interface OrderService {
 	
-	ResponseWrapper<OrderDTO> getOrderById(Long id);
-	ResponseWrapper<OrderDTO> getAllOrders(Pagination pagination);
-	ResponseWrapper<OrderDTO> createOrder(OrderModel order);
+	ResponseWrapper<OrderDTO> getOrderById(Long id, String username);
+	ResponseWrapper<BasicOrderDTO> getAllOrdersByUsernameAndStatusFilter(Pagination pagination, String username, String statusName);
+	ResponseWrapper<OrderDTO> createOrder(OrderModel order, String username);
 	ResponseWrapper<OrderDTO> deleteOrder(Long id);
 	ResponseWrapper<OrderDTO> editOrder(Long id, OrderModel order);
-	ResponseWrapper<OrderDTO> cancelOrder(Long id);
-	ResponseWrapper<OrderDTO> submitOrder(Long id);
-	ResponseWrapper<BasicOrderDTO> getOrdersByStatusFilter(String statusName, Pagination pagination);
+	ResponseWrapper<OrderDTO> cancelOrder(Long id, String username);
+	ResponseWrapper<OrderDTO> submitOrder(Long id, String username);
+	ResponseWrapper<OrderDTO> approveOrder(Long id, Boolean isApproved);
+	OrderModel deliverOrder(Long id);
+	OrderModel fulfillOrder(Long id);
 	
 }

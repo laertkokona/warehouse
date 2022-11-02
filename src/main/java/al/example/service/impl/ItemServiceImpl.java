@@ -67,6 +67,7 @@ public class ItemServiceImpl implements ItemService {
 			log.info("Generating Code for new Item");
 			item.setCode("ITM_" + itemRepo.getCodeSequence().toString());
 			log.info("Saving new Item with code {} to database", item.getCode());
+			item.setTotalQuantity(item.getAvailableQuantity());
 			item = itemRepo.save(item);
 			return new ResponseWrapper<ItemDTO>(true, Arrays.asList(convertToDTO(item)), "Success");
 		} catch (Exception e) {
@@ -106,6 +107,39 @@ public class ItemServiceImpl implements ItemService {
 			log.error("{}", e.getMessage());
 			e.printStackTrace();
 			return new ResponseWrapper<ItemDTO>(false, null, e.getMessage());
+		}
+	}
+
+	@Override
+	public ItemModel updateItemAvailableQuantity(Long id, Integer quantity) {
+		log.info("Fetching Item with id {} from database", id);
+		Optional<ItemModel> itemOpt = itemRepo.findById(id);
+		checkIfExists(itemOpt);
+		ItemModel item = itemOpt.get();
+		if (item.getAvailableQuantity() < quantity)
+			throw new GeneralException("Available quantity less then Requested quantity",
+					Arrays.asList(convertToDTO(item)));
+		log.info("Updating Available Quantity to Item with id {}", id);
+		item.setAvailableQuantity(item.getAvailableQuantity() - quantity);
+		item = itemRepo.save(item);
+		return item;
+	}
+
+	@Override
+	public ItemModel updateItemTotalQuantity(Long id, Integer quantity) {
+		try {
+			log.info("Fetching Item with id {} from database", id);
+			Optional<ItemModel> itemOpt = itemRepo.findById(id);
+			checkIfExists(itemOpt);
+			ItemModel item = itemOpt.get();
+			log.info("Updating Total Quantity to Item with id {}", id);
+			item.setTotalQuantity(item.getTotalQuantity() - quantity);
+			item = itemRepo.save(item);
+			return item;
+		} catch (Exception e) {
+			log.error("{}", e.getMessage());
+			e.printStackTrace();
+			return null;
 		}
 	}
 

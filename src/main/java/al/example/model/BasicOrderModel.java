@@ -31,5 +31,6 @@ public class BasicOrderModel {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_status_id")
 	private OrderStatusModel orderStatus;
+	private String username;
 
 }

@@ -1,5 +1,9 @@
 package al.example.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter @AllArgsConstructor
 public enum RolesEnum {
 	
 	SYSTEM_ADMIN(1L, "SYSTEM_ADMIN"),
@@ -9,17 +13,11 @@ public enum RolesEnum {
 	private Long id;
 	private String name;
 	
-	RolesEnum(Long id, String name){
-		this.id = id;
-		this.name = name;
-	}
-	
-	public Long getId() {
-		return id;
-	}
-	
-	public String getName() {
-		return name;
+	public static RolesEnum getByName(String name) {
+		for (RolesEnum role : values()) {
+			if(role.getName().equalsIgnoreCase(name)) return role;
+		}
+		return null;
 	}
 
 }

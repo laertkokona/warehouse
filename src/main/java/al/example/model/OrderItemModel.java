@@ -1,7 +1,5 @@
 package al.example.model;
 
-import java.math.BigDecimal;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -25,9 +23,9 @@ public class OrderItemModel {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_item_seq")
     @SequenceGenerator(name = "order_item_seq", sequenceName = "order_item_id_seq", allocationSize = 1, initialValue = 1)
 	private Long id;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "item_id")
 	private ItemModel item;
-	private BigDecimal quantity;
+	private Integer quantity;
 
 }

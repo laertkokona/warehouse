@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @Data @NoArgsConstructor @AllArgsConstructor
 public class OrderDTO {
 	
-	private Long id;	
+	private Long id;
 	private Date submittedDate;
 	private Date deadlineDate;
 	private String code;
 	private OrderStatusDTO orderStatus;
-	private List<ItemDTO> items;
-	private DeliveryDTO delivery;
+	private List<OrderItemDTO> items;
+	private String username;
 
 }

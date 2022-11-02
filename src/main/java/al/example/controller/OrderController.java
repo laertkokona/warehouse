@@ -1,5 +1,7 @@
 package al.example.controller;
 
+import java.security.Principal;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,9 +9,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import al.example.model.OrderModel;
+import al.example.model.dto.BasicOrderDTO;
 import al.example.model.dto.OrderDTO;
 import al.example.model.pojo.Pagination;
 import al.example.model.pojo.ResponseWrapper;
@@ -24,20 +28,20 @@ public class OrderController {
 	private final OrderService orderService;
 	
 	@GetMapping("/get/{id}")
-	public ResponseEntity<ResponseWrapper<OrderDTO>> getById(@PathVariable("id") Long id){
-		ResponseWrapper<OrderDTO> res = orderService.getOrderById(id);
-		return ResponseEntity.ok(res);
-	}
-	
-	@GetMapping("/getAll")
-	public ResponseEntity<ResponseWrapper<OrderDTO>> getAll(@RequestBody(required = false) Pagination pagination){
-		ResponseWrapper<OrderDTO> res = orderService.getAllOrders(pagination);
+	public ResponseEntity<ResponseWrapper<OrderDTO>> getById(@PathVariable("id") Long id, Principal principal){
+		ResponseWrapper<OrderDTO> res = orderService.getOrderById(id, principal.getName());
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
 	}
 	
-	@PostMapping("create")
-	public ResponseEntity<ResponseWrapper<OrderDTO>> create(@RequestBody OrderModel order){
-		ResponseWrapper<OrderDTO> res = orderService.createOrder(order);
+	@GetMapping(value = {"/getAll", "/getAll/{username}"})
+	public ResponseEntity<ResponseWrapper<BasicOrderDTO>> getAll(@RequestBody(required = false) Pagination pagination, @PathVariable(required = false) String username, @RequestParam(required = false) String status){
+		ResponseWrapper<BasicOrderDTO> res = orderService.getAllOrdersByUsernameAndStatusFilter(pagination, username, status);
+		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
+	}
+	
+	@PostMapping("/create")
+	public ResponseEntity<ResponseWrapper<OrderDTO>> create(@RequestBody OrderModel order, Principal principal){
+		ResponseWrapper<OrderDTO> res = orderService.createOrder(order, principal.getName());
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
 	}
 	
@@ -47,21 +51,27 @@ public class OrderController {
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
 	}
 	
-	@PostMapping("/update/{id}")
+	@PostMapping("/edit/{id}")
 	public ResponseEntity<ResponseWrapper<OrderDTO>> edit(@PathVariable("id") Long id, @RequestBody OrderModel order){
 		ResponseWrapper<OrderDTO> res = orderService.editOrder(id, order);
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
 	}
 	
 	@PostMapping("/cancel/{id}")
-	public ResponseEntity<ResponseWrapper<OrderDTO>> cancel(@PathVariable("id") Long id){
-		ResponseWrapper<OrderDTO> res = orderService.cancelOrder(id);
+	public ResponseEntity<ResponseWrapper<OrderDTO>> cancel(@PathVariable("id") Long id, Principal principal){
+		ResponseWrapper<OrderDTO> res = orderService.cancelOrder(id, principal.getName());
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
 	}
 
 	@PostMapping("/submit/{id}")
-	public ResponseEntity<ResponseWrapper<OrderDTO>> submit(@PathVariable("id") Long id){
-		ResponseWrapper<OrderDTO> res = orderService.submitOrder(id);
+	public ResponseEntity<ResponseWrapper<OrderDTO>> submit(@PathVariable("id") Long id, Principal principal){
+		ResponseWrapper<OrderDTO> res = orderService.submitOrder(id, principal.getName());
+		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
+	}
+	
+	@PostMapping("/approve/{id}")
+	public ResponseEntity<ResponseWrapper<OrderDTO>> approve(@PathVariable("id") Long id, @RequestParam("isApproved") Boolean isApproved){
+		ResponseWrapper<OrderDTO> res = orderService.approveOrder(id, isApproved);
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
 	}
 

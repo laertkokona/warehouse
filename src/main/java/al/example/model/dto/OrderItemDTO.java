@@ -1,18 +1,14 @@
 package al.example.model.dto;
 
-import java.math.BigDecimal;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data @NoArgsConstructor @AllArgsConstructor
-public class ItemDTO {
+public class OrderItemDTO {
 	
 	private Long id;
-	private String name;
-	private String code;
-	private Integer availableQuantity;
-	private BigDecimal unitPrice;
+	private ItemDTO item;
+	private Integer quantity;
 
 }

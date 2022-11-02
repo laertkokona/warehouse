@@ -12,5 +12,7 @@ public interface ItemService {
 	ResponseWrapper<ItemDTO> saveItem(ItemModel item);
 	ResponseWrapper<ItemDTO> updateItem(ItemModel item);
 	ResponseWrapper<ItemDTO> deleteItem(Long id);
+	ItemModel updateItemAvailableQuantity(Long id, Integer quantity);
+	ItemModel updateItemTotalQuantity(Long id, Integer quantity);
 
 }

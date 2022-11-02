@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import al.example.model.DeliveryModel;
 import al.example.model.dto.DeliveryDTO;
+import al.example.model.pojo.Pagination;
 import al.example.model.pojo.ResponseWrapper;
 import al.example.repo.DeliveryRepo;
 import al.example.service.DeliveryService;
@@ -38,6 +39,31 @@ public class DeliveryServiceImpl implements DeliveryService {
 
 	@Override
 	public ResponseWrapper<DeliveryDTO> createDelivery(DeliveryModel delivery) {
+		try {
+			log.info("Saving new Delivery to database");
+			delivery = deliveryRepo.save(delivery);
+			return new ResponseWrapper<DeliveryDTO>(true, Arrays.asList(convertToDTO(delivery)), "Success");
+		} catch (Exception e) {
+			log.error("{}", e.getMessage());
+			e.printStackTrace();
+			return new ResponseWrapper<DeliveryDTO>(false, null, e.getMessage());
+		}
+	}
+
+	@Override
+	public ResponseWrapper<DeliveryDTO> getAllDeliveries(Pagination pagination) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ResponseWrapper<DeliveryDTO> updateDelivery(DeliveryModel delivery) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ResponseWrapper<DeliveryDTO> deleteDelivery(Long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -30,7 +30,7 @@ public class DeliveryModel {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "delivery_seq")
     @SequenceGenerator(name = "delivery_seq", sequenceName = "delivery_id_seq", allocationSize = 1)
     private Long id;
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @DateTimeFormat(pattern="dd/MM/yyyy")
     private Date date;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

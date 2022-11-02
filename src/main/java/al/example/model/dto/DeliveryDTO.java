@@ -14,5 +14,6 @@ public class DeliveryDTO {
     private Date date;
     private List<TruckDTO> trucks;
     private List<OrderDTO> orders;
+    private Boolean delivered;
 
 }

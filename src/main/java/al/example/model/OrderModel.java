@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,14 +31,13 @@ public class OrderModel {
 	private Date submittedDate;
 	private Date deadlineDate;
 	private String code;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "order_status_id")
 	private OrderStatusModel orderStatus;
-	@OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "order_id")
 	private List<OrderItemModel> items;
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "delivery_id")
-	private DeliveryModel delivery;
+	@Column(nullable = false)
+	private String username;
 
 }
