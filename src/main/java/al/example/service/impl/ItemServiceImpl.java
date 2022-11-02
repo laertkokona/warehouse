@@ -85,10 +85,12 @@ public class ItemServiceImpl implements ItemService {
 			Optional<ItemModel> itemOpt = itemRepo.findById(id);
 			checkIfExists(itemOpt);
 			log.info("Updating Item with id {}", item.getId());
-			item.setCode(itemOpt.get().getCode());
-			item.setId(itemOpt.get().getId());
-			item.setTotalQuantity(item.getAvailableQuantity());
-			ItemModel updatedItem = itemRepo.save(item);
+			ItemModel updatedItem = itemOpt.get();
+			if(item.getName() != null) updatedItem.setName(item.getName());
+			if(item.getCode() != null) updatedItem.setCode(item.getCode());
+//			if(item.getTotalQuantity() != null) updatedItem.setTotalQuantity(item.getTotalQuantity());
+//			if(item.getAvailableQuantity() != null) updatedItem.setAvailableQuantity(item.getAvailableQuantity());
+			updatedItem = itemRepo.save(updatedItem);
 			return new ResponseWrapper<ItemDTO>(true, Arrays.asList(convertToDTO(updatedItem)), "Success");
 		} catch (Exception e) {
 			log.error("{}", e.getMessage());

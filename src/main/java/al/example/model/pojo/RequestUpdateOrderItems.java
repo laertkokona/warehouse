@@ -5,8 +5,9 @@ import java.util.List;
 import al.example.model.OrderItemModel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Getter @AllArgsConstructor
+@Getter @AllArgsConstructor @NoArgsConstructor
 public class RequestUpdateOrderItems {
 	
 	private List<OrderItemModel> items;

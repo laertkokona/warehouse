@@ -56,8 +56,21 @@ public class TruckServiceImpl implements TruckService {
 
 	@Override
 	public ResponseWrapper<TruckDTO> updateTruck(Long id, TruckModel truck) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			log.info("Fetching Truck with id {} from database", id);
+			Optional<TruckModel> truckOpt = truckRepo.findById(id);
+			checkIfExists(truckOpt);
+			TruckModel updatedTruck = truckOpt.get();
+			log.info("Updating Truck with id {}", id);
+			if(truck.getLicensePlate() != null) updatedTruck.setLicensePlate(truck.getLicensePlate());
+			if(truck.getChassisNumber() != null) updatedTruck.setChassisNumber(truck.getChassisNumber());
+			updatedTruck = truckRepo.save(updatedTruck);
+			return new ResponseWrapper<TruckDTO>(true, Arrays.asList(convertToDTO(updatedTruck)), "Success");
+		} catch (Exception e) {
+			log.error("{}", e.getMessage());
+			e.printStackTrace();
+			return new ResponseWrapper<TruckDTO>(false, null, e.getMessage());
+		}
 	}
 
 	@Override

@@ -13,6 +13,7 @@ public class ItemDTO {
 	private String name;
 	private String code;
 	private Integer availableQuantity;
+	private Integer totalQuantity;
 	private BigDecimal unitPrice;
 
 }
