@@ -9,7 +9,7 @@ import al.example.model.pojo.ResponseWrapper;
 public interface OrderService {
 	
 	ResponseWrapper<OrderDTO> getOrderById(Long id, String username);
-	ResponseWrapper<BasicOrderDTO> getAllOrdersByUsernameAndStatusFilter(Pagination pagination, String username, String statusName);
+	ResponseWrapper<BasicOrderDTO> getAllOrdersByUsernameAndStatusFilter(Pagination pagination, String authHeader, String statusName);
 	ResponseWrapper<OrderDTO> createOrder(OrderModel order, String username);
 	ResponseWrapper<OrderDTO> deleteOrder(Long id);
 	ResponseWrapper<OrderDTO> editOrder(Long id, OrderModel order);

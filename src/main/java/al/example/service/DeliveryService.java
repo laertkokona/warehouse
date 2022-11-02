@@ -10,7 +10,8 @@ public interface DeliveryService {
 	ResponseWrapper<DeliveryDTO> getDeliveryById(Long id);
 	ResponseWrapper<DeliveryDTO> getAllDeliveries(Pagination pagination);
 	ResponseWrapper<DeliveryDTO> createDelivery(DeliveryModel delivery);
-	ResponseWrapper<DeliveryDTO> updateDelivery(DeliveryModel delivery);
+	ResponseWrapper<DeliveryDTO> updateDelivery(Long id, DeliveryModel delivery);
 	ResponseWrapper<DeliveryDTO> deleteDelivery(Long id);
+	ResponseWrapper<DeliveryDTO> deliveryFulfilled(Long id);
 
 }

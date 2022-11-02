@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data @NoArgsConstructor @AllArgsConstructor
 public class Pagination {
 	
-	private Integer pageSize = 1;
-	private Integer pageNumber = 10;
+	private Integer pageSize = 10;
+	private Integer pageNumber = 0;
 	private String sortByProperty = "id";
 	private Boolean sortByAsc = true;
 

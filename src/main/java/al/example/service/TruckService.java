@@ -9,6 +9,7 @@ public interface TruckService {
 	
 	ResponseWrapper<TruckDTO> getTruckById(Long id);
 	ResponseWrapper<TruckDTO> saveTruck(TruckModel truck);
+	ResponseWrapper<TruckDTO> updateTruck(Long id, TruckModel truck);
 	ResponseWrapper<TruckDTO> getAllTrucks(Pagination pagination);
 	ResponseWrapper<TruckDTO> deleteTruckById(Long id);
 

@@ -1,6 +1,7 @@
 package al.example.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,5 +41,22 @@ public class DeliveryController {
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(405).body(res);
 	}
 
+	@PostMapping("/update/{id}")
+	public ResponseEntity<ResponseWrapper<DeliveryDTO>> save(@PathVariable("id") Long id, @RequestBody DeliveryModel deliveryModel) {
+		ResponseWrapper<DeliveryDTO> res = deliveryService.updateDelivery(id, deliveryModel);
+		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(405).body(res);
+	}
+	
+	@PostMapping("/fulfill/{id}")
+	public ResponseEntity<ResponseWrapper<DeliveryDTO>> fulfill(@PathVariable("id") Long id) {
+		ResponseWrapper<DeliveryDTO> res = deliveryService.deliveryFulfilled(id);
+		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(405).body(res);
+	}
 
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<ResponseWrapper<DeliveryDTO>> delete(@PathVariable("id") Long id){
+		ResponseWrapper<DeliveryDTO> res = deliveryService.deleteDelivery(id);
+		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
+	}
+	
 }

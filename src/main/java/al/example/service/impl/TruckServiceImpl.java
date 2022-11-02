@@ -55,7 +55,14 @@ public class TruckServiceImpl implements TruckService {
 	}
 
 	@Override
+	public ResponseWrapper<TruckDTO> updateTruck(Long id, TruckModel truck) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public ResponseWrapper<TruckDTO> getAllTrucks(Pagination pagination) {
+		if(pagination == null) pagination = new Pagination();
 		log.info("Fetching all Trucks with {}", pagination.toString());
 		Pageable pageable = PageRequest.of(pagination.getPageNumber(), pagination.getPageSize(),
 				pagination.getSortByAsc() ? Sort.by(pagination.getSortByProperty()).ascending()

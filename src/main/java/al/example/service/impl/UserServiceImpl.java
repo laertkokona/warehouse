@@ -57,9 +57,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public ResponseWrapper<UserDTO> updateUser(UserModel user) {
-		log.info("Fetching User with id {} from database", user.getId());
-		Optional<UserModel> userOpt = userRepo.findById(user.getId());
+	public ResponseWrapper<UserDTO> updateUser(Long id, UserModel user) {
+		log.info("Fetching User with id {} from database", id);
+		Optional<UserModel> userOpt = userRepo.findById(id);
 		checkIfExists(userOpt);
 		log.info("Updating User {}", user.getUsername());
 		user.setPassword(userOpt.get().getPassword());
@@ -86,6 +86,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public ResponseWrapper<UserDTO> getAllUsers(Pagination pagination) {
+		if(pagination == null) pagination = new Pagination();
 		log.info("Fetching all Users with {}", pagination.toString());
 		Pageable pageable = PageRequest.of(pagination.getPageNumber(), pagination.getPageSize(),
 				pagination.getSortByAsc() ? Sort.by(pagination.getSortByProperty()).ascending()

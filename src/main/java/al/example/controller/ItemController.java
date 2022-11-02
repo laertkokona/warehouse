@@ -41,9 +41,9 @@ public class ItemController {
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(405).body(res);
 	}
 
-	@PostMapping("/update")
-	public ResponseEntity<ResponseWrapper<ItemDTO>> update(@RequestBody ItemModel itemModel) {
-		ResponseWrapper<ItemDTO> res = itemService.updateItem(itemModel);
+	@PostMapping("/update/{id}")
+	public ResponseEntity<ResponseWrapper<ItemDTO>> update(@PathVariable("id") Long id, @RequestBody ItemModel itemModel) {
+		ResponseWrapper<ItemDTO> res = itemService.updateItem(id, itemModel);
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(405).body(res);
 	}
 	

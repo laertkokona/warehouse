@@ -24,8 +24,14 @@ public class TruckController {
 	private final TruckService truckService;
 	
 	@PostMapping("/save")
-	public ResponseEntity<ResponseWrapper<TruckDTO>> saveUser(@RequestBody TruckModel truck){
+	public ResponseEntity<ResponseWrapper<TruckDTO>> save(@RequestBody TruckModel truck){
 		ResponseWrapper<TruckDTO> res = truckService.saveTruck(truck);
+		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
+	}
+	
+	@PostMapping("/update/{id}")
+	public ResponseEntity<ResponseWrapper<TruckDTO>> update(@PathVariable("id") Long id, @RequestBody TruckModel truck){
+		ResponseWrapper<TruckDTO> res = truckService.updateTruck(id, truck);
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
 	}
 	

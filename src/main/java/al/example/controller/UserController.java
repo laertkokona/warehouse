@@ -41,9 +41,9 @@ public class UserController {
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
 	}
 	
-	@PostMapping("/update")
-	public ResponseEntity<ResponseWrapper<UserDTO>> update(@RequestBody UserModel user){
-		ResponseWrapper<UserDTO> res = userService.updateUser(user);
+	@PostMapping("/update/{id}")
+	public ResponseEntity<ResponseWrapper<UserDTO>> update(@PathVariable("id") Long id, @RequestBody UserModel user){
+		ResponseWrapper<UserDTO> res = userService.updateUser(id, user);
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
 	}
 	

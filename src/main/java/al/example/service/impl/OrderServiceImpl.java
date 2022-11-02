@@ -2,6 +2,7 @@ package al.example.service.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -13,7 +14,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+
 import al.example.enums.OrderStatusesEnum;
+import al.example.enums.RolesEnum;
 import al.example.exception.GeneralException;
 import al.example.model.BasicOrderModel;
 import al.example.model.OrderModel;
@@ -66,7 +73,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 	
 	private void checkIfOrderBelongsToClient(UserModel user, OrderModel order, String username) {
-		if(user.getRole().getName().equalsIgnoreCase("CLIENT")) {
+		if(user.getRole().getName().equalsIgnoreCase(RolesEnum.CLIENT.getName())) {
 			if(!order.getUsername().equals(username)) {
 				throw new AccessDeniedException("You are not allowed to execute this action!");
 			}
@@ -84,9 +91,16 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public ResponseWrapper<BasicOrderDTO> getAllOrdersByUsernameAndStatusFilter(Pagination pagination, String username, String statusName) {
-		log.info("Fetching all Orders with {}", pagination.toString());
+	public ResponseWrapper<BasicOrderDTO> getAllOrdersByUsernameAndStatusFilter(Pagination pagination, String authHeader, String statusName) {
+		String token = authHeader.substring("Bearer ".length());
+		Algorithm algorithm = Algorithm.HMAC256("superSecretAlgorithmHMAC256".getBytes());
+		JWTVerifier verifier = JWT.require(algorithm).build();
+		DecodedJWT decodedJWT = verifier.verify(token);
+		String username = decodedJWT.getSubject();
+//		String role = decodedJWT.getClaim("roles").asArray(String.class)[0];
 		List<BasicOrderModel> ordersModel = new ArrayList<BasicOrderModel>();
+		if(pagination == null) pagination = new Pagination();
+		log.info("Fetching all Orders with {}", pagination.toString());
 		Pageable pageable = PageRequest.of(pagination.getPageNumber(), pagination.getPageSize(),
 				pagination.getSortByAsc() ? Sort.by(pagination.getSortByProperty()).ascending()
 						: Sort.by(pagination.getSortByProperty()).descending());
@@ -225,6 +239,7 @@ public class OrderServiceImpl implements OrderService {
 					.findByName(OrderStatusesEnum.AWAITING_APPROVAL.getName());
 			log.info("Setting {} status to Order", osDTO.get().getName());
 			orderDb.setOrderStatus(osDTO.get());
+			orderDb.setSubmittedDate(new Date());
 			orderDb = orderRepo.save(orderDb);
 			return new ResponseWrapper<OrderDTO>(true, Arrays.asList(convertToDTO(orderDb)), "Success");
 		} catch (Exception e) {

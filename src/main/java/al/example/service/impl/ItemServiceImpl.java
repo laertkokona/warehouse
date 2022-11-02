@@ -52,6 +52,7 @@ public class ItemServiceImpl implements ItemService {
 
 	@Override
 	public ResponseWrapper<ItemDTO> getAllItems(Pagination pagination) {
+		if(pagination == null) pagination = new Pagination();
 		log.info("Fetching all Items with {}", pagination.toString());
 		Pageable pageable = PageRequest.of(pagination.getPageNumber(), pagination.getPageSize(),
 				pagination.getSortByAsc() ? Sort.by(pagination.getSortByProperty()).ascending()
@@ -78,13 +79,15 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public ResponseWrapper<ItemDTO> updateItem(ItemModel item) {
+	public ResponseWrapper<ItemDTO> updateItem(Long id, ItemModel item) {
 		try {
-			log.info("Fetching Item with id {} from database", item.getId());
-			Optional<ItemModel> itemOpt = itemRepo.findById(item.getId());
+			log.info("Fetching Item with id {} from database", id);
+			Optional<ItemModel> itemOpt = itemRepo.findById(id);
 			checkIfExists(itemOpt);
 			log.info("Updating Item with id {}", item.getId());
 			item.setCode(itemOpt.get().getCode());
+			item.setId(itemOpt.get().getId());
+			item.setTotalQuantity(item.getAvailableQuantity());
 			ItemModel updatedItem = itemRepo.save(item);
 			return new ResponseWrapper<ItemDTO>(true, Arrays.asList(convertToDTO(updatedItem)), "Success");
 		} catch (Exception e) {
