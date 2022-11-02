@@ -60,6 +60,9 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and().authorizeRequests().antMatchers("/v3/api-docs", "/swagger-ui/**", "/swagger-ui*/**", "/warehouse-api/**", "/login").permitAll()
+		.antMatchers("/orders/getAllClient", "/orders/get/**").hasAnyAuthority(RolesEnum.WAREHOUSE_MANAGER.name(), RolesEnum.CLIENT.name())
+		.antMatchers("/orders/submit/**", "/orders/cancel/**", "/orders/edit/**", "/orders/create").hasAuthority(RolesEnum.CLIENT.name())
+		.antMatchers("/items/**", "/orders/approve/**", "/orders/delete/**", "/trucks/**", "/deliveries/**").hasAuthority(RolesEnum.WAREHOUSE_MANAGER.name())
 		.antMatchers("/users/**").hasAuthority(RolesEnum.SYSTEM_ADMIN.name())
 		.and().authorizeRequests().anyRequest().authenticated()
 		.and().addFilter(new CustomAuthenticationFilter(authManager(http.getSharedObject(AuthenticationConfiguration.class))))

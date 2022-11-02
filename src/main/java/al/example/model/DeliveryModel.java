@@ -15,8 +15,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,7 +28,6 @@ public class DeliveryModel {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "delivery_seq")
     @SequenceGenerator(name = "delivery_seq", sequenceName = "delivery_id_seq", allocationSize = 1)
     private Long id;
-    @DateTimeFormat(pattern="dd/MM/yyyy")
     private Date date;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
