@@ -57,15 +57,23 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public ResponseWrapper<UserDTO> updateUser(Long id, UserModel user) {
+	public ResponseWrapper<UserDTO> updateUser(Long id, UserModel reqUser) {
 		log.info("Fetching User with id {} from database", id);
 		Optional<UserModel> userOpt = userRepo.findById(id);
 		checkIfExists(userOpt);
+		UserModel user = userOpt.get();
 		log.info("Updating User {}", user.getUsername());
 		user.setPassword(userOpt.get().getPassword());
 		user.setActive(userOpt.get().getActive());
-		UserModel updatedUser = userRepo.save(user);
-		return new ResponseWrapper<UserDTO>(true, Arrays.asList(convertToDTO(updatedUser)), "Success");
+		if(reqUser.getUsername() != null) {
+			if(userRepo.findByUsername(reqUser.getUsername()).isPresent()) throw new GeneralException("Username taken!", Arrays.asList(reqUser.getUsername()));
+			user.setUsername(reqUser.getUsername());
+		}
+		if(reqUser.getFirstName() != null) user.setFirstName(reqUser.getUsername());
+		if(reqUser.getLastName() != null) user.setLastName(reqUser.getLastName());
+		if(reqUser.getRole() != null) user.setRole(reqUser.getRole());
+		user = userRepo.save(user);
+		return new ResponseWrapper<UserDTO>(true, Arrays.asList(convertToDTO(user)), "Success");
 	}
 
 	@Override

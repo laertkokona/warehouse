@@ -23,6 +23,7 @@ import al.example.enums.OrderStatusesEnum;
 import al.example.enums.RolesEnum;
 import al.example.exception.GeneralException;
 import al.example.model.BasicOrderModel;
+import al.example.model.OrderItemModel;
 import al.example.model.OrderModel;
 import al.example.model.OrderStatusModel;
 import al.example.model.UserModel;
@@ -150,7 +151,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public ResponseWrapper<OrderDTO> editOrder(Long id, OrderModel order) {
+	public ResponseWrapper<OrderDTO> editOrder(Long id, List<OrderItemModel> items) {
 		try {
 			log.info("Fetching Order with id {} from database", id);
 			OrderModel orderDb = orderRepo.findById(id)
@@ -169,10 +170,10 @@ public class OrderServiceImpl implements OrderService {
 			log.info("Updating Order Items' Quantities");
 			orderDb.getItems().stream().forEach(
 					item -> itemService.updateItemAvailableQuantity(item.getItem().getId(), -item.getQuantity()));
-			order.getItems().stream().forEach(
+			items.stream().forEach(
 					item -> itemService.updateItemAvailableQuantity(item.getItem().getId(), item.getQuantity()));
 			log.info("Replacing old Order Items with new Order Items", id);
-			orderDb.setItems(order.getItems());
+			orderDb.setItems(items);
 			orderDb = orderRepo.save(orderDb);
 			return new ResponseWrapper<OrderDTO>(true, Arrays.asList(convertToDTO(orderDb)), "Success");
 		} catch (Exception e) {

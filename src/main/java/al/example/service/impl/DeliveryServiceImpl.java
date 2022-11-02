@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import al.example.exception.GeneralException;
 import al.example.model.DeliveryModel;
+import al.example.model.OrderItemModel;
+import al.example.model.OrderModel;
 import al.example.model.dto.DeliveryDTO;
 import al.example.model.pojo.Pagination;
 import al.example.model.pojo.ResponseWrapper;
@@ -49,6 +51,16 @@ public class DeliveryServiceImpl implements DeliveryService {
 	public ResponseWrapper<DeliveryDTO> createDelivery(DeliveryModel delivery) {
 		try {
 			log.info("Saving new Delivery to database");
+			int orderItemsQuantity = 0;
+			for (OrderModel order : delivery.getOrders()) {
+				for (OrderItemModel item : order.getItems()) {
+					orderItemsQuantity += item.getQuantity();
+				}
+			}
+			if(orderItemsQuantity > delivery.getTrucks().size() * 10) {
+				log.error("Not enough truck for this many items: Items = {}, , Trucks = {}", delivery.getTrucks().size(), orderItemsQuantity);
+				throw new GeneralException("Not enough truck for this many items: Items = " + delivery.getTrucks().size() + ", Trucks = " + orderItemsQuantity, null);
+			}
 			delivery = deliveryRepo.save(delivery);
 			delivery.getOrders().stream().forEach(order -> orderService.deliverOrder(order.getId()));
 			return new ResponseWrapper<DeliveryDTO>(true, Arrays.asList(convertToDTO(delivery)), "Success");
