@@ -23,7 +23,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig {
-
+	
+//	private static final String[] AUTH_WHITELIST = {"/swagger-resources/**","/swagger-ui.html","/v2/api-docs","/webjars/**"};
+//
 //	private final PasswordEncoder passwordEncoder;
 //	private final UserService userService;
 //
@@ -59,7 +61,8 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-		.and().authorizeRequests().antMatchers("/v3/api-docs", "/swagger-ui/**", "/swagger-ui*/**", "/warehouse-api/**", "/login").permitAll()
+		.and().authorizeRequests().antMatchers("/v2/api-docs", "/v3/api-docs", "/swagger-ui/**", "/swagger-ui.html", "/warehouse-api/**", "/login").permitAll()
+		.antMatchers("/swagger-resources/**","/swagger-ui.html","/v2/api-docs","/webjars/**").permitAll()
 		.antMatchers("/orders/getAllClient", "/orders/get/**").hasAnyAuthority(RolesEnum.WAREHOUSE_MANAGER.name(), RolesEnum.CLIENT.name())
 		.antMatchers("/orders/submit/**", "/orders/cancel/**", "/orders/edit/**", "/orders/create").hasAuthority(RolesEnum.CLIENT.name())
 		.antMatchers("/items/**", "/orders/approve/**", "/orders/delete/**", "/trucks/**", "/deliveries/**").hasAuthority(RolesEnum.WAREHOUSE_MANAGER.name())
@@ -69,7 +72,6 @@ public class SecurityConfig {
 			.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
 			.exceptionHandling().accessDeniedHandler(accessDeniedHandler());
 		return http.build();
-
 	}
-
+	
 }

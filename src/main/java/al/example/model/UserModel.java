@@ -22,6 +22,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,6 +32,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "user")
 @DynamicUpdate
 @Data @NoArgsConstructor @AllArgsConstructor
+@ApiModel(description = "This table holds User information")
 public class UserModel implements UserDetails {
 
 	/**
@@ -40,7 +43,8 @@ public class UserModel implements UserDetails {
 	@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
     @SequenceGenerator(name = "user_seq", sequenceName = "user_id_seq", allocationSize = 1, initialValue = 1)
-    private Long id;
+    @ApiModelProperty(notes = "Unique User Id Generated from Sequence")
+	private Long id;
 	@Column(unique = true, nullable = false)
 	private String username;
 	private String password;
