@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
 		Pageable pageable = PageRequest.of(pagination.getPageNumber(), pagination.getPageSize(),
 				pagination.getSortByAsc() ? Sort.by(pagination.getSortByProperty()).ascending()
 						: Sort.by(pagination.getSortByProperty()).descending());
-		List<UserModel> usersModel = userRepo.findAll(pageable).getContent();
+		List<UserModel> usersModel = userRepo.findByActive(true, pageable).getContent();
 		List<UserDTO> usersDTO = usersModel.stream().map(this::convertToDTO).collect(Collectors.toList());
 		return new ResponseWrapper<List<UserDTO>>(true, usersDTO, "Success");
 	}

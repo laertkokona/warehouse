@@ -38,6 +38,6 @@ public class OrderModel {
 	@JoinColumn(name = "order_id")
 	private List<OrderItemModel> items;
 	@Column(nullable = false)
-	private String username;
+	private Long userId;
 
 }

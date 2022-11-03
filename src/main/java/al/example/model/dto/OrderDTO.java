@@ -16,6 +16,6 @@ public class OrderDTO {
 	private String code;
 	private OrderStatusDTO orderStatus;
 	private List<OrderItemDTO> items;
-	private String username;
+	private Long userId;
 
 }

@@ -75,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
 	
 	private void checkIfOrderBelongsToClient(UserModel user, OrderModel order, String username) {
 		if(user.getRole().getName().equalsIgnoreCase(RolesEnum.CLIENT.getName())) {
-			if(!order.getUsername().equals(username)) {
+			if(!order.getUserId().equals(user.getId())) {
 				throw new AccessDeniedException("You are not allowed to execute this action!");
 			}
 		}
@@ -128,8 +128,9 @@ public class OrderServiceImpl implements OrderService {
 		log.info("Updating Order Items' Quantities");
 		order.getItems().stream()
 				.forEach(item -> itemService.updateItemAvailableQuantity(item.getItem().getId(), item.getQuantity()));
+		UserModel user = userRepo.findByUsername(username).orElseThrow(() -> new GeneralException("User with username " + username + " not found in db", null));
 		log.info("Saving new Order to database");
-		order.setUsername(username);
+		order.setUserId(user.getId());
 		order = orderRepo.save(order);
 		return new ResponseWrapper<OrderDTO>(true, convertToDTO(order), "Success");
 	}
