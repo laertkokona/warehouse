@@ -58,7 +58,7 @@ public class ItemController {
 
 	@PostMapping("/removeQuantity/{id}")
 	public ResponseEntity<ResponseWrapper<ItemDTO>> removeQuantity(@PathVariable("id") Long id, @RequestParam("quantity") Integer quantity) {
-		ResponseWrapper<ItemDTO> res = itemService.removeQuantityToItem(id, quantity);
+		ResponseWrapper<ItemDTO> res = itemService.removeQuantityFromItem(id, quantity);
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(405).body(res);
 	}
 

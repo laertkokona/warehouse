@@ -162,7 +162,7 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public ResponseWrapper<ItemDTO> removeQuantityToItem(Long id, Integer quantity) {
+	public ResponseWrapper<ItemDTO> removeQuantityFromItem(Long id, Integer quantity) {
 		log.info("Fetching Item with id {} from database", id);
 		Optional<ItemModel> itemOpt = itemRepo.findById(id);
 		checkIfExists(itemOpt);
@@ -170,8 +170,8 @@ public class ItemServiceImpl implements ItemService {
 		if(item.getTotalQuantity() < quantity) throw new GeneralException("Total Quantity less than Quantity to be removed", null);
 		if(item.getAvailableQuantity() < quantity) throw new GeneralException("Available Quantity less than Quantity to be removed", null);
 		log.info("Updating Quantity to Item with id {}", id);
-		item.setTotalQuantity(item.getTotalQuantity() + quantity);
-		item.setAvailableQuantity(item.getAvailableQuantity() + quantity);
+		item.setTotalQuantity(item.getTotalQuantity() - quantity);
+		item.setAvailableQuantity(item.getAvailableQuantity() - quantity);
 		item = itemRepo.save(item);
 		return new ResponseWrapper<ItemDTO>(true, convertToDTO(item), "Success");
 	}
