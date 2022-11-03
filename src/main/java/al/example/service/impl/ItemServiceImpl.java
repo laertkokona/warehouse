@@ -38,16 +38,19 @@ public class ItemServiceImpl implements ItemService {
 		if (truckOpt.isEmpty()) {
 			log.error("Item not found");
 			throw new GeneralException("Item not found", null);
+		} else if (truckOpt.get().getActive() == false) {
+			log.error("Item not active");
+			throw new GeneralException("Item not active", truckOpt.get());
 		}
 	}
 
 	@Override
 	public ResponseWrapper<ItemDTO> getItemById(Long id) {
 		log.info("Fetching Item with id {} from database", id);
-		Optional<ItemModel> itemOpt = itemRepo.findById(id);
+		Optional<ItemModel> itemOpt = itemRepo.findByIdAndActive(id, true);
 		return itemOpt.isPresent()
 				? new ResponseWrapper<ItemDTO>(true, convertToDTO(itemOpt.get()), "SUCCESS")
-				: new ResponseWrapper<ItemDTO>(false, null, "Delivery with id " + id + " not found");
+				: new ResponseWrapper<ItemDTO>(false, null, "Item with id " + id + " not found");
 	}
 
 	@Override
@@ -83,7 +86,7 @@ public class ItemServiceImpl implements ItemService {
 	public ResponseWrapper<ItemDTO> updateItem(Long id, ItemModel item) {
 		try {
 			log.info("Fetching Item with id {} from database", id);
-			Optional<ItemModel> itemOpt = itemRepo.findById(id);
+			Optional<ItemModel> itemOpt = itemRepo.findByIdAndActive(id, true);
 			checkIfExists(itemOpt);
 			log.info("Updating Item with id {}", item.getId());
 			ItemModel updatedItem = itemOpt.get();
@@ -104,7 +107,7 @@ public class ItemServiceImpl implements ItemService {
 	public ResponseWrapper<ItemDTO> deleteItem(Long id) {
 		try {
 			log.info("Fetching Item with id {} from database", id);
-			Optional<ItemModel> itemOpt = itemRepo.findById(id);
+			Optional<ItemModel> itemOpt = itemRepo.findByIdAndActive(id, true);
 			checkIfExists(itemOpt);
 			log.info("Deleting Item with id {} from database", id);
 //			itemRepo.deleteById(id);
@@ -122,7 +125,7 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public ItemModel updateItemAvailableQuantity(Long id, Integer quantity) {
 		log.info("Fetching Item with id {} from database", id);
-		Optional<ItemModel> itemOpt = itemRepo.findById(id);
+		Optional<ItemModel> itemOpt = itemRepo.findByIdAndActive(id, true);
 		checkIfExists(itemOpt);
 		ItemModel item = itemOpt.get();
 		if (item.getAvailableQuantity() < quantity)
@@ -138,7 +141,7 @@ public class ItemServiceImpl implements ItemService {
 	public ItemModel updateItemTotalQuantity(Long id, Integer quantity) {
 		try {
 			log.info("Fetching Item with id {} from database", id);
-			Optional<ItemModel> itemOpt = itemRepo.findById(id);
+			Optional<ItemModel> itemOpt = itemRepo.findByIdAndActive(id, true);
 			checkIfExists(itemOpt);
 			ItemModel item = itemOpt.get();
 			log.info("Updating Total Quantity to Item with id {}", id);
@@ -155,7 +158,7 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public ResponseWrapper<ItemDTO> addQuantityToItem(Long id, Integer quantity) {
 		log.info("Fetching Item with id {} from database", id);
-		Optional<ItemModel> itemOpt = itemRepo.findById(id);
+		Optional<ItemModel> itemOpt = itemRepo.findByIdAndActive(id, true);
 		checkIfExists(itemOpt);
 		ItemModel item = itemOpt.get();
 		log.info("Updating Quantity to Item with id {}", id);
@@ -168,7 +171,7 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public ResponseWrapper<ItemDTO> removeQuantityFromItem(Long id, Integer quantity) {
 		log.info("Fetching Item with id {} from database", id);
-		Optional<ItemModel> itemOpt = itemRepo.findById(id);
+		Optional<ItemModel> itemOpt = itemRepo.findByIdAndActive(id, true);
 		checkIfExists(itemOpt);
 		ItemModel item = itemOpt.get();
 		if(item.getTotalQuantity() < quantity) throw new GeneralException("Total Quantity less than Quantity to be removed", null);

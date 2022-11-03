@@ -132,18 +132,16 @@ public class OrderServiceImpl implements OrderService {
 		order.setOrderStatus(orderStatusRepo.findByInitialStatus(true).get());
 		List<ItemModel> itemList = new ArrayList<>();
 		order.getItems().stream().forEach(i -> {
-			ItemModel im = itemRepo.findById(i.getItem().getId())
+			ItemModel im = itemRepo.findByIdAndActive(i.getItem().getId(), true)
 					.orElseThrow(() -> new GeneralException("Item not found in database", i.getId()));
 			itemList.add(im);
 		});
 		order.getItems().stream().forEach(oi -> {
-//			oi.setName(oi.getItem().getName());
 			oi.setName(itemList.stream().filter(i -> i.getId() == oi.getItem().getId()).findFirst().get().getName());
-//			oi.setCode(oi.getItem().getCode());
 			oi.setCode(itemList.stream().filter(i -> i.getId() == oi.getItem().getId()).findFirst().get().getCode());
-			if (oi.getUnitPrice() == null)
-//				oi.setUnitPrice(oi.getItem().getUnitPrice());
+			if (oi.getUnitPrice() == null) {
 				oi.setUnitPrice(itemList.stream().filter(i -> i.getId() == oi.getItem().getId()).findFirst().get().getUnitPrice());
+			}
 		});
 		log.info("Updating Order Items' Quantities");
 		order.getItems().stream()
