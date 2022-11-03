@@ -46,12 +46,12 @@ public class ItemServiceImpl implements ItemService {
 		log.info("Fetching Item with id {} from database", id);
 		Optional<ItemModel> itemOpt = itemRepo.findById(id);
 		return itemOpt.isPresent()
-				? new ResponseWrapper<ItemDTO>(true, Arrays.asList(convertToDTO(itemOpt.get())), "SUCCESS")
+				? new ResponseWrapper<ItemDTO>(true, convertToDTO(itemOpt.get()), "SUCCESS")
 				: new ResponseWrapper<ItemDTO>(false, null, "Delivery with id " + id + " not found");
 	}
 
 	@Override
-	public ResponseWrapper<ItemDTO> getAllItems(Pagination pagination) {
+	public ResponseWrapper<List<ItemDTO>> getAllItems(Pagination pagination) {
 		if(pagination == null) pagination = new Pagination();
 		log.info("Fetching all Items with {}", pagination.toString());
 		Pageable pageable = PageRequest.of(pagination.getPageNumber(), pagination.getPageSize(),
@@ -59,7 +59,7 @@ public class ItemServiceImpl implements ItemService {
 						: Sort.by(pagination.getSortByProperty()).descending());
 		List<ItemModel> itemsModel = itemRepo.findAll(pageable).getContent();
 		List<ItemDTO> itemsDTO = itemsModel.stream().map(this::convertToDTO).collect(Collectors.toList());
-		return new ResponseWrapper<ItemDTO>(true, itemsDTO, "Success");
+		return new ResponseWrapper<List<ItemDTO>>(true, itemsDTO, "Success");
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
 			log.info("Saving new Item with code {} to database", item.getCode());
 			item.setTotalQuantity(item.getAvailableQuantity());
 			item = itemRepo.save(item);
-			return new ResponseWrapper<ItemDTO>(true, Arrays.asList(convertToDTO(item)), "Success");
+			return new ResponseWrapper<ItemDTO>(true, convertToDTO(item), "Success");
 		} catch (Exception e) {
 			log.error("{}", e.getMessage());
 			e.printStackTrace();
@@ -91,7 +91,7 @@ public class ItemServiceImpl implements ItemService {
 //			if(item.getTotalQuantity() != null) updatedItem.setTotalQuantity(item.getTotalQuantity());
 //			if(item.getAvailableQuantity() != null) updatedItem.setAvailableQuantity(item.getAvailableQuantity());
 			updatedItem = itemRepo.save(updatedItem);
-			return new ResponseWrapper<ItemDTO>(true, Arrays.asList(convertToDTO(updatedItem)), "Success");
+			return new ResponseWrapper<ItemDTO>(true, convertToDTO(updatedItem), "Success");
 		} catch (Exception e) {
 			log.error("{}", e.getMessage());
 			e.printStackTrace();
@@ -146,6 +146,34 @@ public class ItemServiceImpl implements ItemService {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public ResponseWrapper<ItemDTO> addQuantityToItem(Long id, Integer quantity) {
+		log.info("Fetching Item with id {} from database", id);
+		Optional<ItemModel> itemOpt = itemRepo.findById(id);
+		checkIfExists(itemOpt);
+		ItemModel item = itemOpt.get();
+		log.info("Updating Quantity to Item with id {}", id);
+		item.setTotalQuantity(item.getTotalQuantity() + quantity);
+		item.setAvailableQuantity(item.getAvailableQuantity() + quantity);
+		item = itemRepo.save(item);
+		return new ResponseWrapper<ItemDTO>(true, convertToDTO(item), "Success");
+	}
+
+	@Override
+	public ResponseWrapper<ItemDTO> removeQuantityToItem(Long id, Integer quantity) {
+		log.info("Fetching Item with id {} from database", id);
+		Optional<ItemModel> itemOpt = itemRepo.findById(id);
+		checkIfExists(itemOpt);
+		ItemModel item = itemOpt.get();
+		if(item.getTotalQuantity() < quantity) throw new GeneralException("Total Quantity less than Quantity to be removed", null);
+		if(item.getAvailableQuantity() < quantity) throw new GeneralException("Available Quantity less than Quantity to be removed", null);
+		log.info("Updating Quantity to Item with id {}", id);
+		item.setTotalQuantity(item.getTotalQuantity() + quantity);
+		item.setAvailableQuantity(item.getAvailableQuantity() + quantity);
+		item = itemRepo.save(item);
+		return new ResponseWrapper<ItemDTO>(true, convertToDTO(item), "Success");
 	}
 
 }

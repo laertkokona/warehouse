@@ -1,5 +1,7 @@
 package al.example.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import al.example.model.ItemModel;
@@ -30,8 +33,8 @@ public class ItemController {
 	}
 	
 	@GetMapping("/getAll")
-	public ResponseEntity<ResponseWrapper<ItemDTO>> getAll(@RequestBody(required = false) Pagination pagination) {
-		ResponseWrapper<ItemDTO> res = itemService.getAllItems(pagination);
+	public ResponseEntity<ResponseWrapper<List<ItemDTO>>> getAll(@RequestBody(required = false) Pagination pagination) {
+		ResponseWrapper<List<ItemDTO>> res = itemService.getAllItems(pagination);
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(405).body(res);
 	}
 	
@@ -47,6 +50,18 @@ public class ItemController {
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(405).body(res);
 	}
 	
+	@PostMapping("/addQuantity/{id}")
+	public ResponseEntity<ResponseWrapper<ItemDTO>> addQuantity(@PathVariable("id") Long id, @RequestParam("quantity") Integer quantity) {
+		ResponseWrapper<ItemDTO> res = itemService.addQuantityToItem(id, quantity);
+		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(405).body(res);
+	}
+
+	@PostMapping("/removeQuantity/{id}")
+	public ResponseEntity<ResponseWrapper<ItemDTO>> removeQuantity(@PathVariable("id") Long id, @RequestParam("quantity") Integer quantity) {
+		ResponseWrapper<ItemDTO> res = itemService.removeQuantityToItem(id, quantity);
+		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(405).body(res);
+	}
+
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<ResponseWrapper<ItemDTO>> delete(@PathVariable("id") Long id) {
 		ResponseWrapper<ItemDTO> res = itemService.deleteItem(id);

@@ -70,7 +70,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 		log.info("Fetching Delivery with id {} from database", id);
 		Optional<DeliveryModel> deliveryOpt = deliveryRepo.findById(id);
 		return deliveryOpt.isPresent()
-				? new ResponseWrapper<DeliveryDTO>(true, Arrays.asList(convertToDTO(deliveryOpt.get())), "SUCCESS")
+				? new ResponseWrapper<DeliveryDTO>(true, convertToDTO(deliveryOpt.get()), "SUCCESS")
 				: new ResponseWrapper<DeliveryDTO>(false, null, "Delivery with id " + id + " not found");
 	}
 
@@ -103,7 +103,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 			delivery.setDate(date);
 			delivery = deliveryRepo.save(delivery);
 			orderList.stream().forEach(order -> orderService.deliverOrder(order.getId()));
-			return new ResponseWrapper<DeliveryDTO>(true, Arrays.asList(convertToDTO(delivery)), "Success");
+			return new ResponseWrapper<DeliveryDTO>(true, convertToDTO(delivery), "Success");
 		} catch (Exception e) {
 			log.error("{}", e.getMessage());
 			e.printStackTrace();
@@ -114,12 +114,12 @@ public class DeliveryServiceImpl implements DeliveryService {
 	private void checkIfOrdersApproved(List<OrderModel> orderList) {
 		for (OrderModel orderModel : orderList) {
 			if (!orderModel.getOrderStatus().getName().equalsIgnoreCase(OrderStatusesEnum.APPROVED.getName()))
-				throw new GeneralException("Order not Approved for delivery", Arrays.asList(orderModel));
+				throw new GeneralException("Order not Approved for delivery", orderModel);
 		}
 	}
 
 	@Override
-	public ResponseWrapper<DeliveryDTO> getAllDeliveries(Pagination pagination) {
+	public ResponseWrapper<List<DeliveryDTO>> getAllDeliveries(Pagination pagination) {
 		if (pagination == null)
 			pagination = new Pagination();
 		log.info("Fetching all Deliverise with {}", pagination.toString());
@@ -129,7 +129,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
 		List<DeliveryModel> deliveriesModel = deliveryRepo.findAll(pageable).getContent();
 		List<DeliveryDTO> deliveriesDTO = deliveriesModel.stream().map(this::convertToDTO).collect(Collectors.toList());
-		return new ResponseWrapper<DeliveryDTO>(true, deliveriesDTO, "Success");
+		return new ResponseWrapper<List<DeliveryDTO>>(true, deliveriesDTO, "Success");
 	}
 
 	@Override
@@ -142,7 +142,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 			deliveryDb.setOrders(delivery.getOrders());
 			deliveryDb.setTrucks(delivery.getTrucks());
 			deliveryDb = deliveryRepo.save(deliveryDb);
-			return new ResponseWrapper<DeliveryDTO>(true, Arrays.asList(convertToDTO(deliveryDb)), "Success");
+			return new ResponseWrapper<DeliveryDTO>(true, convertToDTO(deliveryDb), "Success");
 		} catch (Exception e) {
 			log.error("{}", e.getMessage());
 			e.printStackTrace();
@@ -176,7 +176,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 			deliveryDb.getOrders().stream().forEach(order -> orderService.fulfillOrder(order.getId()));
 			deliveryDb.setDelivered(true);
 			deliveryDb = deliveryRepo.save(deliveryDb);
-			return new ResponseWrapper<DeliveryDTO>(true, Arrays.asList(convertToDTO(deliveryDb)), "Success");
+			return new ResponseWrapper<DeliveryDTO>(true, convertToDTO(deliveryDb), "Success");
 		} catch (Exception e) {
 			log.error("{}", e.getMessage());
 			e.printStackTrace();

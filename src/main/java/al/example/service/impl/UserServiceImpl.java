@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
 		log.info("Saving new user {} to database", user.getUsername());
 		user.setPassword(encoder.encode(user.getPassword()));
 		user = userRepo.save(user);
-		return new ResponseWrapper<UserDTO>(true, Arrays.asList(convertToDTO(user)), "Success");
+		return new ResponseWrapper<UserDTO>(true, convertToDTO(user), "Success");
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
 		if(reqUser.getLastName() != null) user.setLastName(reqUser.getLastName());
 		if(reqUser.getRole() != null) user.setRole(reqUser.getRole());
 		user = userRepo.save(user);
-		return new ResponseWrapper<UserDTO>(true, Arrays.asList(convertToDTO(user)), "Success");
+		return new ResponseWrapper<UserDTO>(true, convertToDTO(user), "Success");
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
 		log.info("Fetching User {} from database", username);
 		Optional<UserModel> userOpt = userRepo.findByUsername(username);
 		checkIfExists(userOpt);
-		return new ResponseWrapper<UserDTO>(true, Arrays.asList(convertToDTO(userOpt.get())), "Success");
+		return new ResponseWrapper<UserDTO>(true, convertToDTO(userOpt.get()), "Success");
 	}
 
 	@Override
@@ -89,11 +89,11 @@ public class UserServiceImpl implements UserService {
 		log.info("Fetching User with id {} from database", id);
 		Optional<UserModel> userOpt = userRepo.findById(id);
 		checkIfExists(userOpt);
-		return new ResponseWrapper<UserDTO>(true, Arrays.asList(convertToDTO(userOpt.get())), "Success");
+		return new ResponseWrapper<UserDTO>(true, convertToDTO(userOpt.get()), "Success");
 	}
 
 	@Override
-	public ResponseWrapper<UserDTO> getAllUsers(Pagination pagination) {
+	public ResponseWrapper<List<UserDTO>> getAllUsers(Pagination pagination) {
 		if(pagination == null) pagination = new Pagination();
 		log.info("Fetching all Users with {}", pagination.toString());
 		Pageable pageable = PageRequest.of(pagination.getPageNumber(), pagination.getPageSize(),
@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
 						: Sort.by(pagination.getSortByProperty()).descending());
 		List<UserModel> usersModel = userRepo.findAll(pageable).getContent();
 		List<UserDTO> usersDTO = usersModel.stream().map(this::convertToDTO).collect(Collectors.toList());
-		return new ResponseWrapper<UserDTO>(true, usersDTO, "Success");
+		return new ResponseWrapper<List<UserDTO>>(true, usersDTO, "Success");
 	}
 
 	@Override

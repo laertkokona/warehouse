@@ -1,7 +1,5 @@
 package al.example.model.pojo;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +8,7 @@ import lombok.NoArgsConstructor;
 public class ResponseWrapper<T> {
 	
 	private Boolean status;
-	private List<T> content;
+	private T content;
 	private String message;
 
 }

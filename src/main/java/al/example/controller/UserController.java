@@ -1,5 +1,7 @@
 package al.example.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +26,8 @@ public class UserController {
 	private final UserService userService;
 	
 	@GetMapping("/getAll")
-	public ResponseEntity<ResponseWrapper<UserDTO>> getAll(@RequestBody(required = false) Pagination pagination) {
-		ResponseWrapper<UserDTO> res = userService.getAllUsers(pagination);
+	public ResponseEntity<ResponseWrapper<List<UserDTO>>> getAll(@RequestBody(required = false) Pagination pagination) {
+		ResponseWrapper<List<UserDTO>> res = userService.getAllUsers(pagination);
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
 	}
 	

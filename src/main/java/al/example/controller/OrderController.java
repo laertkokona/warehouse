@@ -1,6 +1,7 @@
 package al.example.controller;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,14 +37,14 @@ public class OrderController {
 	}
 
 	@GetMapping(value = "/getAllClient")
-	public ResponseEntity<ResponseWrapper<BasicOrderDTO>> getAllForClient(@RequestBody(required = false) Pagination pagination,
-			@RequestParam(required = false) String status,
+	public ResponseEntity<ResponseWrapper<List<BasicOrderDTO>>> getAllForClient(
+			@RequestBody(required = false) Pagination pagination, @RequestParam(required = false) String status,
 			@RequestHeader("Authorization") String authHeader) {
-		ResponseWrapper<BasicOrderDTO> res = orderService.getAllOrdersByUsernameAndStatusFilter(pagination, authHeader,
-				status);
+		ResponseWrapper<List<BasicOrderDTO>> res = orderService.getAllOrdersByUsernameAndStatusFilter(pagination,
+				authHeader, status);
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
 	}
-	
+
 //	@GetMapping(value = "/getAll")
 //	public ResponseEntity<ResponseWrapper<BasicOrderDTO>> getAll(@RequestBody(required = false) Pagination pagination,
 //			@PathVariable(required = false) String username,
@@ -66,7 +67,8 @@ public class OrderController {
 	}
 
 	@PostMapping("/edit/{id}")
-	public ResponseEntity<ResponseWrapper<OrderDTO>> edit(@PathVariable("id") Long id, @RequestBody RequestUpdateOrderItems req) {
+	public ResponseEntity<ResponseWrapper<OrderDTO>> edit(@PathVariable("id") Long id,
+			@RequestBody RequestUpdateOrderItems req) {
 		ResponseWrapper<OrderDTO> res = orderService.editOrder(id, req.getItems());
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
 	}

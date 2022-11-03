@@ -34,7 +34,7 @@ public class TruckServiceImpl implements TruckService {
 		log.info("Fetching Truck with id {} from database", id);
 		Optional<TruckModel> truckOpt = truckRepo.findById(id);
 		checkIfExists(truckOpt);
-		return new ResponseWrapper<TruckDTO>(true, Arrays.asList(convertToDTO(truckOpt.get())), "Success");
+		return new ResponseWrapper<TruckDTO>(true, convertToDTO(truckOpt.get()), "Success");
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class TruckServiceImpl implements TruckService {
 		}
 		log.info("Saving new Truck with plate {} to database", truck.getLicensePlate());
 		truck = truckRepo.save(truck);
-		return new ResponseWrapper<TruckDTO>(true, Arrays.asList(convertToDTO(truck)), "Success");
+		return new ResponseWrapper<TruckDTO>(true, convertToDTO(truck), "Success");
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class TruckServiceImpl implements TruckService {
 			if(truck.getLicensePlate() != null) updatedTruck.setLicensePlate(truck.getLicensePlate());
 			if(truck.getChassisNumber() != null) updatedTruck.setChassisNumber(truck.getChassisNumber());
 			updatedTruck = truckRepo.save(updatedTruck);
-			return new ResponseWrapper<TruckDTO>(true, Arrays.asList(convertToDTO(updatedTruck)), "Success");
+			return new ResponseWrapper<TruckDTO>(true, convertToDTO(updatedTruck), "Success");
 		} catch (Exception e) {
 			log.error("{}", e.getMessage());
 			e.printStackTrace();
@@ -74,7 +74,7 @@ public class TruckServiceImpl implements TruckService {
 	}
 
 	@Override
-	public ResponseWrapper<TruckDTO> getAllTrucks(Pagination pagination) {
+	public ResponseWrapper<List<TruckDTO>> getAllTrucks(Pagination pagination) {
 		if(pagination == null) pagination = new Pagination();
 		log.info("Fetching all Trucks with {}", pagination.toString());
 		Pageable pageable = PageRequest.of(pagination.getPageNumber(), pagination.getPageSize(),
@@ -83,7 +83,7 @@ public class TruckServiceImpl implements TruckService {
 
 		List<TruckModel> trucksModel = truckRepo.findAll(pageable).getContent();
 		List<TruckDTO> trucksDTO = trucksModel.stream().map(this::convertToDTO).collect(Collectors.toList());
-		return new ResponseWrapper<TruckDTO>(true, trucksDTO, "Success");
+		return new ResponseWrapper<List<TruckDTO>>(true, trucksDTO, "Success");
 	}
 
 	@Override

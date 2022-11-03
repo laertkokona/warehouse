@@ -88,11 +88,11 @@ public class OrderServiceImpl implements OrderService {
 		Optional<OrderModel> orderOpt = orderRepo.findById(id);
 		checkIfExists(orderOpt);
 		checkIfOrderBelongsToClient(user, orderOpt.get(), username);
-		return new ResponseWrapper<OrderDTO>(true, Arrays.asList(convertToDTO(orderOpt.get())), "Success");
+		return new ResponseWrapper<OrderDTO>(true, convertToDTO(orderOpt.get()), "Success");
 	}
 
 	@Override
-	public ResponseWrapper<BasicOrderDTO> getAllOrdersByUsernameAndStatusFilter(Pagination pagination, String authHeader, String statusName) {
+	public ResponseWrapper<List<BasicOrderDTO>> getAllOrdersByUsernameAndStatusFilter(Pagination pagination, String authHeader, String statusName) {
 		String token = authHeader.substring("Bearer ".length());
 		Algorithm algorithm = Algorithm.HMAC256("superSecretAlgorithmHMAC256".getBytes());
 		JWTVerifier verifier = JWT.require(algorithm).build();
@@ -117,7 +117,7 @@ public class OrderServiceImpl implements OrderService {
 			ordersModel = basicOrderRepo.findByUsernameAndOrderStatus_Name(username, statusName, pageable).getContent();
 		}
 		List<BasicOrderDTO> ordersDTO = ordersModel.stream().map(this::convertToDTOBasic).collect(Collectors.toList());
-		return new ResponseWrapper<BasicOrderDTO>(true, ordersDTO, "Success");
+		return new ResponseWrapper<List<BasicOrderDTO>>(true, ordersDTO, "Success");
 	}
 
 	@Override
@@ -131,7 +131,7 @@ public class OrderServiceImpl implements OrderService {
 		log.info("Saving new Order to database");
 		order.setUsername(username);
 		order = orderRepo.save(order);
-		return new ResponseWrapper<OrderDTO>(true, Arrays.asList(convertToDTO(order)), "Success");
+		return new ResponseWrapper<OrderDTO>(true, convertToDTO(order), "Success");
 	}
 
 	@Override
@@ -175,7 +175,7 @@ public class OrderServiceImpl implements OrderService {
 			log.info("Replacing old Order Items with new Order Items", id);
 			orderDb.setItems(items);
 			orderDb = orderRepo.save(orderDb);
-			return new ResponseWrapper<OrderDTO>(true, Arrays.asList(convertToDTO(orderDb)), "Success");
+			return new ResponseWrapper<OrderDTO>(true, convertToDTO(orderDb), "Success");
 		} catch (Exception e) {
 			log.error("{}", e.getMessage());
 			e.printStackTrace();
@@ -209,7 +209,7 @@ public class OrderServiceImpl implements OrderService {
 			orderDb.getItems().stream().forEach(
 					item -> itemService.updateItemAvailableQuantity(item.getItem().getId(), -item.getQuantity()));
 			orderDb = orderRepo.save(orderDb);
-			return new ResponseWrapper<OrderDTO>(true, Arrays.asList(convertToDTO(orderDb)), "Success");
+			return new ResponseWrapper<OrderDTO>(true, convertToDTO(orderDb), "Success");
 		} catch (Exception e) {
 			log.error("{}", e.getMessage());
 			e.printStackTrace();
@@ -242,7 +242,7 @@ public class OrderServiceImpl implements OrderService {
 			orderDb.setOrderStatus(osDTO.get());
 			orderDb.setSubmittedDate(new Date());
 			orderDb = orderRepo.save(orderDb);
-			return new ResponseWrapper<OrderDTO>(true, Arrays.asList(convertToDTO(orderDb)), "Success");
+			return new ResponseWrapper<OrderDTO>(true, convertToDTO(orderDb), "Success");
 		} catch (Exception e) {
 			log.error("{}", e.getMessage());
 			e.printStackTrace();
@@ -276,7 +276,7 @@ public class OrderServiceImpl implements OrderService {
 			log.info("Setting {} status to Order", osDTO.get().getName());
 			orderDb.setOrderStatus(osDTO.get());
 			orderDb = orderRepo.save(orderDb);
-			return new ResponseWrapper<OrderDTO>(true, Arrays.asList(convertToDTO(orderDb)), "Success");
+			return new ResponseWrapper<OrderDTO>(true, convertToDTO(orderDb), "Success");
 		} catch (Exception e) {
 			log.error("{}", e.getMessage());
 			e.printStackTrace();

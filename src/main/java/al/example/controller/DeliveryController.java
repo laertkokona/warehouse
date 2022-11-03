@@ -1,5 +1,7 @@
 package al.example.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,8 +32,8 @@ public class DeliveryController {
 	}
 	
 	@GetMapping("/getAll")
-	public ResponseEntity<ResponseWrapper<DeliveryDTO>> getAll(@RequestBody(required = false) Pagination pagination) {
-		ResponseWrapper<DeliveryDTO> res = deliveryService.getAllDeliveries(pagination);
+	public ResponseEntity<ResponseWrapper<List<DeliveryDTO>>> getAll(@RequestBody(required = false) Pagination pagination) {
+		ResponseWrapper<List<DeliveryDTO>> res = deliveryService.getAllDeliveries(pagination);
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(405).body(res);
 	}
 	
