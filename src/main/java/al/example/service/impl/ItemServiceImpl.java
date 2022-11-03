@@ -110,7 +110,6 @@ public class ItemServiceImpl implements ItemService {
 			Optional<ItemModel> itemOpt = itemRepo.findByIdAndActive(id, true);
 			checkIfExists(itemOpt);
 			log.info("Deleting Item with id {} from database", id);
-//			itemRepo.deleteById(id);
 			ItemModel item = itemOpt.get();
 			item.setActive(false);
 			itemRepo.save(item);

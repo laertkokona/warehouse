@@ -24,7 +24,6 @@ import al.example.enums.RolesEnum;
 import al.example.exception.GeneralException;
 import al.example.model.BasicOrderModel;
 import al.example.model.ItemModel;
-import al.example.model.OrderItemModel;
 import al.example.model.OrderModel;
 import al.example.model.OrderStatusModel;
 import al.example.model.UserModel;
@@ -170,10 +169,10 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public ResponseWrapper<OrderDTO> editOrder(Long id, List<OrderItemModel> items) {
+	public ResponseWrapper<OrderDTO> editOrder(Long id, OrderModel order) {
 		try {
 			log.info("Fetching Order with id {} from database", id);
-			OrderModel orderDb = orderRepo.findById(id)
+			final OrderModel orderDb = orderRepo.findById(id)
 					.orElseThrow(() -> new GeneralException("Order not found", null));
 			IOrderStatusActionDTO osaDTO = orderStatusActionRepo
 					.findOrderStatusActionByOrderStatusName(orderDb.getOrderStatus().getName().toLowerCase())
@@ -186,15 +185,33 @@ public class OrderServiceImpl implements OrderService {
 				log.error("Order cannot be Edited");
 				throw new GeneralException("Order cannot be Edited", Arrays.asList(convertToDTO(orderDb)));
 			}
+			List<ItemModel> itemList = new ArrayList<>();
+			order.getItems().stream().forEach(i -> {
+				ItemModel im = itemRepo.findByIdAndActive(i.getItem().getId(), true)
+						.orElseThrow(() -> new GeneralException("Item not found in database", i.getId()));
+				itemList.add(im);
+			});
+			order.getItems().stream().forEach(item -> {
+				item.setName(itemList.stream().filter(i -> i.getId() == item.getItem().getId()).findFirst().get().getName());
+				item.setCode(itemList.stream().filter(i -> i.getId() == item.getItem().getId()).findFirst().get().getCode());
+				if (item.getUnitPrice() == null)
+					item.setUnitPrice(itemList.stream().filter(i -> i.getId() == item.getItem().getId()).findFirst().get().getUnitPrice());
+			});
 			log.info("Updating Order Items' Quantities");
 			orderDb.getItems().stream().forEach(
 					item -> itemService.updateItemAvailableQuantity(item.getItem().getId(), -item.getQuantity()));
-			items.stream().forEach(
-					item -> itemService.updateItemAvailableQuantity(item.getItem().getId(), item.getQuantity()));
+			orderDb.getItems().clear();
+			order.getItems().stream().forEach(item -> {
+				itemService.updateItemAvailableQuantity(item.getItem().getId(), item.getQuantity());
+				item.setName(itemList.stream().filter(i -> i.getId() == item.getItem().getId()).findFirst().get().getName());
+				item.setCode(itemList.stream().filter(i -> i.getId() == item.getItem().getId()).findFirst().get().getCode());
+				if (item.getUnitPrice() == null)
+					item.setUnitPrice(itemList.stream().filter(i -> i.getId() == item.getItem().getId()).findFirst().get().getUnitPrice());
+				orderDb.getItems().add(item);
+			});
 			log.info("Replacing old Order Items with new Order Items", id);
-			orderDb.setItems(items);
-			orderDb = orderRepo.save(orderDb);
-			return new ResponseWrapper<OrderDTO>(true, convertToDTO(orderDb), "Success");
+			OrderModel updatedOrder = orderRepo.save(orderDb);
+			return new ResponseWrapper<OrderDTO>(true, convertToDTO(updatedOrder), "Success");
 		} catch (Exception e) {
 			log.error("{}", e.getMessage());
 			e.printStackTrace();

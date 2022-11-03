@@ -18,7 +18,6 @@ import al.example.model.OrderModel;
 import al.example.model.dto.BasicOrderDTO;
 import al.example.model.dto.OrderDTO;
 import al.example.model.pojo.Pagination;
-import al.example.model.pojo.RequestUpdateOrderItems;
 import al.example.model.pojo.ResponseWrapper;
 import al.example.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -68,8 +67,8 @@ public class OrderController {
 
 	@PostMapping("/edit/{id}")
 	public ResponseEntity<ResponseWrapper<OrderDTO>> edit(@PathVariable("id") Long id,
-			@RequestBody RequestUpdateOrderItems req) {
-		ResponseWrapper<OrderDTO> res = orderService.editOrder(id, req.getItems());
+			@RequestBody OrderModel order) {
+		ResponseWrapper<OrderDTO> res = orderService.editOrder(id, order);
 		return res.getStatus() ? ResponseEntity.ok(res) : ResponseEntity.status(410).body(res);
 	}
 
