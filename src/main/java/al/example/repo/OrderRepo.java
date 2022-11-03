@@ -12,7 +12,7 @@ import al.example.model.OrderModel;
 public interface OrderRepo extends JpaRepository<OrderModel, Long> {
 	
 	Page<OrderModel> findByOrderStatus_Name(String name, Pageable pageable);
-	Page<OrderModel> findByUsernameAndOrderStatus_Name(String username, String name, Pageable pageable);
+	Page<OrderModel> findByUserIdAndOrderStatus_Name(Long userId, String name, Pageable pageable);
 	
 	@Query(value = "select nextval('warehouse.order_code_seq')", nativeQuery = true)
 	Long getCodeSequence();
