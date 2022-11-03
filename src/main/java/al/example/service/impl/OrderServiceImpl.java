@@ -139,9 +139,8 @@ public class OrderServiceImpl implements OrderService {
 		order.getItems().stream().forEach(oi -> {
 			oi.setName(itemList.stream().filter(i -> i.getId() == oi.getItem().getId()).findFirst().get().getName());
 			oi.setCode(itemList.stream().filter(i -> i.getId() == oi.getItem().getId()).findFirst().get().getCode());
-			if (oi.getUnitPrice() == null) {
+			if (oi.getUnitPrice() == null)
 				oi.setUnitPrice(itemList.stream().filter(i -> i.getId() == oi.getItem().getId()).findFirst().get().getUnitPrice());
-			}
 		});
 		log.info("Updating Order Items' Quantities");
 		order.getItems().stream()
