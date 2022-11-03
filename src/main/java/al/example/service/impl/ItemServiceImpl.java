@@ -69,6 +69,7 @@ public class ItemServiceImpl implements ItemService {
 			item.setCode("ITM_" + itemRepo.getCodeSequence().toString());
 			log.info("Saving new Item with code {} to database", item.getCode());
 			item.setTotalQuantity(item.getAvailableQuantity());
+			item.setActive(true);
 			item = itemRepo.save(item);
 			return new ResponseWrapper<ItemDTO>(true, convertToDTO(item), "Success");
 		} catch (Exception e) {
@@ -106,7 +107,10 @@ public class ItemServiceImpl implements ItemService {
 			Optional<ItemModel> itemOpt = itemRepo.findById(id);
 			checkIfExists(itemOpt);
 			log.info("Deleting Item with id {} from database", id);
-			itemRepo.deleteById(id);
+//			itemRepo.deleteById(id);
+			ItemModel item = itemOpt.get();
+			item.setActive(false);
+			itemRepo.save(item);
 			return new ResponseWrapper<ItemDTO>(true, null, "Success");
 		} catch (Exception e) {
 			log.error("{}", e.getMessage());

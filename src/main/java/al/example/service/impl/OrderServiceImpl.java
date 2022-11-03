@@ -23,6 +23,7 @@ import al.example.enums.OrderStatusesEnum;
 import al.example.enums.RolesEnum;
 import al.example.exception.GeneralException;
 import al.example.model.BasicOrderModel;
+import al.example.model.ItemModel;
 import al.example.model.OrderItemModel;
 import al.example.model.OrderModel;
 import al.example.model.OrderStatusModel;
@@ -33,6 +34,7 @@ import al.example.model.dto.OrderDTO;
 import al.example.model.pojo.Pagination;
 import al.example.model.pojo.ResponseWrapper;
 import al.example.repo.BasicOrderRepo;
+import al.example.repo.ItemRepo;
 import al.example.repo.OrderRepo;
 import al.example.repo.OrderStatusActionRepo;
 import al.example.repo.OrderStatusRepo;
@@ -52,6 +54,7 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderStatusActionRepo orderStatusActionRepo;
 	private final BasicOrderRepo basicOrderRepo;
 	private final ItemService itemService;
+	private final ItemRepo itemRepo;
 	private final UserRepo userRepo;
 	private final ModelMapper modelMapper;
 
@@ -59,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
 		log.info("Converting Order Model to DTO");
 		return modelMapper.map(order, OrderDTO.class);
 	}
-	
+
 	private BasicOrderDTO convertToDTOBasic(BasicOrderModel order) {
 		log.info("Converting Basic Order Model to DTO");
 		return modelMapper.map(order, BasicOrderDTO.class);
@@ -72,10 +75,10 @@ public class OrderServiceImpl implements OrderService {
 			throw new GeneralException("Order not found", null);
 		}
 	}
-	
+
 	private void checkIfOrderBelongsToClient(UserModel user, OrderModel order, String username) {
-		if(user.getRole().getName().equalsIgnoreCase(RolesEnum.CLIENT.getName())) {
-			if(!order.getUserId().equals(user.getId())) {
+		if (user.getRole().getName().equalsIgnoreCase(RolesEnum.CLIENT.getName())) {
+			if (!order.getUserId().equals(user.getId())) {
 				throw new AccessDeniedException("You are not allowed to execute this action!");
 			}
 		}
@@ -92,7 +95,8 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public ResponseWrapper<List<BasicOrderDTO>> getAllOrdersByUsernameAndStatusFilter(Pagination pagination, String authHeader, String statusName) {
+	public ResponseWrapper<List<BasicOrderDTO>> getAllOrdersByUsernameAndStatusFilter(Pagination pagination,
+			String authHeader, String statusName) {
 		String token = authHeader.substring("Bearer ".length());
 		Algorithm algorithm = Algorithm.HMAC256("superSecretAlgorithmHMAC256".getBytes());
 		JWTVerifier verifier = JWT.require(algorithm).build();
@@ -100,13 +104,14 @@ public class OrderServiceImpl implements OrderService {
 		String username = decodedJWT.getSubject();
 //		String role = decodedJWT.getClaim("roles").asArray(String.class)[0];
 		List<BasicOrderModel> ordersModel = new ArrayList<BasicOrderModel>();
-		if(pagination == null) pagination = new Pagination();
+		if (pagination == null)
+			pagination = new Pagination();
 		log.info("Fetching all Orders with {}", pagination.toString());
 		Pageable pageable = PageRequest.of(pagination.getPageNumber(), pagination.getPageSize(),
 				pagination.getSortByAsc() ? Sort.by(pagination.getSortByProperty()).ascending()
 						: Sort.by(pagination.getSortByProperty()).descending());
 		log.info("Getting data from database");
-		if(username == null && statusName == null) {
+		if (username == null && statusName == null) {
 			log.info("CASE 1: username == null && statusName == null");
 			ordersModel = basicOrderRepo.findAll(pageable).getContent();
 		} else if (username == null && statusName != null) {
@@ -125,10 +130,26 @@ public class OrderServiceImpl implements OrderService {
 		log.info("Generating Code for new Order");
 		order.setCode("ORD_" + orderRepo.getCodeSequence().toString());
 		order.setOrderStatus(orderStatusRepo.findByInitialStatus(true).get());
+		List<ItemModel> itemList = new ArrayList<>();
+		order.getItems().stream().forEach(i -> {
+			ItemModel im = itemRepo.findById(i.getItem().getId())
+					.orElseThrow(() -> new GeneralException("Item not found in database", i.getId()));
+			itemList.add(im);
+		});
+		order.getItems().stream().forEach(oi -> {
+//			oi.setName(oi.getItem().getName());
+			oi.setName(itemList.stream().filter(i -> i.getId() == oi.getItem().getId()).findFirst().get().getName());
+//			oi.setCode(oi.getItem().getCode());
+			oi.setCode(itemList.stream().filter(i -> i.getId() == oi.getItem().getId()).findFirst().get().getCode());
+			if (oi.getUnitPrice() == null)
+//				oi.setUnitPrice(oi.getItem().getUnitPrice());
+				oi.setUnitPrice(itemList.stream().filter(i -> i.getId() == oi.getItem().getId()).findFirst().get().getUnitPrice());
+		});
 		log.info("Updating Order Items' Quantities");
 		order.getItems().stream()
 				.forEach(item -> itemService.updateItemAvailableQuantity(item.getItem().getId(), item.getQuantity()));
-		UserModel user = userRepo.findByUsername(username).orElseThrow(() -> new GeneralException("User with username " + username + " not found in db", null));
+		UserModel user = userRepo.findByUsername(username)
+				.orElseThrow(() -> new GeneralException("User with username " + username + " not found in db", null));
 		log.info("Saving new Order to database");
 		order.setUserId(user.getId());
 		order = orderRepo.save(order);
@@ -304,8 +325,8 @@ public class OrderServiceImpl implements OrderService {
 		log.info("Setting {} status to Order", osDTO.get().getName());
 		orderDb.setOrderStatus(osDTO.get());
 		log.info("Updating Order Items' Quantities");
-		orderDb.getItems().stream().forEach(
-				item -> itemService.updateItemTotalQuantity(item.getItem().getId(), item.getQuantity()));
+		orderDb.getItems().stream()
+				.forEach(item -> itemService.updateItemTotalQuantity(item.getItem().getId(), item.getQuantity()));
 		orderDb = orderRepo.save(orderDb);
 		return orderDb;
 	}

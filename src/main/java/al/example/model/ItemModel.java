@@ -29,5 +29,7 @@ public class ItemModel {
 	private Integer totalQuantity;
 	private Integer availableQuantity;
 	private BigDecimal unitPrice;
+	@Column(nullable = false)
+	private Boolean active;
 
 }

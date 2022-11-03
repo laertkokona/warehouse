@@ -1,5 +1,7 @@
 package al.example.model;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -26,6 +28,9 @@ public class OrderItemModel {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "item_id")
 	private ItemModel item;
+	private String name;
+	private String code;
+	private BigDecimal unitPrice;
 	private Integer quantity;
 
 }
