@@ -80,9 +80,9 @@ public class DeliveryServiceImpl implements DeliveryService {
 		try {
 			log.info("Saving new Delivery to database");
 			List<OrderModel> orderList = delivery.getOrders().stream().map(o -> orderRepo.findById(o.getId()).get())
-					.toList();
+					.collect(Collectors.toList());
 			List<TruckModel> truckList = delivery.getTrucks().stream().map(t -> truckRepo.findById(t.getId()).get())
-					.toList();
+					.collect(Collectors.toList());
 			List<TruckModel> duplicateTrucks = checkIfTrucksAvailable(truckList);
 			checkIfOrdersApproved(orderList);
 			if (duplicateTrucks.size() > 0)
@@ -94,7 +94,8 @@ public class DeliveryServiceImpl implements DeliveryService {
 				}
 			}
 			if (orderItemsQuantity > truckList.size() * 10) {
-				log.error("Not enough truck for this many items: Items = {}, , Trucks = {}", orderItemsQuantity, truckList.size());
+				log.error("Not enough truck for this many items: Items = {}, , Trucks = {}", orderItemsQuantity,
+						truckList.size());
 				throw new GeneralException("Not enough truck for this many items: Items = " + truckList.size()
 						+ ", Trucks = " + orderItemsQuantity, null);
 			}
