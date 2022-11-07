@@ -15,5 +15,5 @@ public class ItemDTO {
 	private Integer availableQuantity;
 	private Integer totalQuantity;
 	private BigDecimal unitPrice;
-
+	
 }

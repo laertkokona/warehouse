@@ -60,7 +60,7 @@ public class ItemServiceImpl implements ItemService {
 		Pageable pageable = PageRequest.of(pagination.getPageNumber(), pagination.getPageSize(),
 				pagination.getSortByAsc() ? Sort.by(pagination.getSortByProperty()).ascending()
 						: Sort.by(pagination.getSortByProperty()).descending());
-		List<ItemModel> itemsModel = itemRepo.findAll(pageable).getContent();
+		List<ItemModel> itemsModel = itemRepo.findByActive(true, pageable).getContent();
 		List<ItemDTO> itemsDTO = itemsModel.stream().map(this::convertToDTO).collect(Collectors.toList());
 		return new ResponseWrapper<List<ItemDTO>>(true, itemsDTO, "Success");
 	}
